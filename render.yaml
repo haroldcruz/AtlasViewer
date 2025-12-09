@@ -1,6 +1,6 @@
 services:
  - type: web
- name: atlasviewer
- env: docker
- dockerfilePath: Dockerfile
- autoDeploy: true
+   name: atlasviewer
+   runtime: docker
+   dockerfilePath: Dockerfile
+   autoDeploy: true
