@@ -19,7 +19,7 @@
  </div>
  <div class="form-row">
  <label for="rol">Rol</label>
- <input id="rol" asp-for="Usuario.rol" type="number" class="form-control" />
+ <select id="rol" asp-for="Usuario.rol" class="form-control" asp-items="Model.RolesSelect"></select>
  <span asp-validation-for="Usuario.rol" class="text-danger"></span>
  </div>
  <div class="alert alert-info" role="status">

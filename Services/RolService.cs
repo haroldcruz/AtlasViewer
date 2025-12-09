@@ -42,7 +42,7 @@ public class RolService : IRolService
  }
  public async Task<Rol?> GetByCodigoAsync(int codigo, CancellationToken cancellationToken = default)
  {
- var cursor = await _collection.FindAsync(r => r.codigo == codigo, cancellationToken: cancellationToken);
+ var cursor = await _collection.FindAsync(r => r.id_rol == codigo, cancellationToken: cancellationToken);
  return await cursor.FirstOrDefaultAsync(cancellationToken);
  }
  public async Task<Rol> CreateAsync(Rol nuevo, CancellationToken cancellationToken = default)

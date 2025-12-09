@@ -20,4 +20,6 @@ public class Usuario
  public int rol { get; set; }
 
  public string? hash { get; set; }
+
+ public bool mustChangePassword { get; set; } = false; // obliga cambio en primer inicio
 }

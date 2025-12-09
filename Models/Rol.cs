@@ -1,9 +1,16 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace AtlasViewer.Models
 {
  public class Rol
  {
- public string? Id { get; set; }
- public string nombre { get; set; } = string.Empty;
- public int codigo { get; set; } =0; // código numérico asociado (ej.1=Administrador)
+ [BsonId]
+ [BsonRepresentation(BsonType.ObjectId)]
+ public string? Id { get; set; } // maps _id ObjectId -> string
+ [BsonElement("id_rol")]
+ public int id_rol { get; set; }
+ [BsonElement("nombre_rol")]
+ public string nombre_rol { get; set; } = string.Empty;
  }
 }

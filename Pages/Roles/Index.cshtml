@@ -20,8 +20,8 @@
  @foreach (var r in Model.Roles)
  {
  <tr>
- <td>@r.nombre</td>
- <td>@r.codigo</td>
+ <td>@r.nombre_rol</td>
+ <td>@r.id_rol</td>
  <td class="text-end">
  <a asp-page="Edit" asp-route-id="@r.Id" class="btn btn-sm btn-primary">Editar</a>
  <a asp-page="Delete" asp-route-id="@r.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>

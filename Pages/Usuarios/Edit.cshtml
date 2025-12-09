@@ -4,35 +4,29 @@
  ViewData["Title"] = "Editar Usuario";
  Layout = "../Shared/_Layout";
 }
-
-<h2 class="usuarios-title">Editar Usuario</h2>
-
-<form method="post" class="usuarios-form">
+<section class="container usuarios-page" aria-labelledby="usuarios-edit-title">
+ <h1 id="usuarios-edit-title" class="h4 usuarios-title">Editar Usuario</h1>
+ <form method="post" class="usuarios-form">
+ <input type="hidden" asp-for="Usuario.Id" />
  <div class="form-row">
- <label>Nombre</label>
- <input asp-for="Usuario.nombre" />
+ <label for="nombre">Nombre</label>
+ <input id="nombre" asp-for="Usuario.nombre" class="form-control" />
  <span asp-validation-for="Usuario.nombre" class="text-danger"></span>
  </div>
  <div class="form-row">
- <label>Email</label>
- <input asp-for="Usuario.email" />
+ <label for="email">Email</label>
+ <input id="email" asp-for="Usuario.email" class="form-control" />
  <span asp-validation-for="Usuario.email" class="text-danger"></span>
  </div>
  <div class="form-row">
- <label>Rol</label>
- <input asp-for="Usuario.rol" type="number" />
+ <label for="rol">Rol</label>
+ <select id="rol" asp-for="Usuario.rol" class="form-control" asp-items="Model.RolesSelect"></select>
  <span asp-validation-for="Usuario.rol" class="text-danger"></span>
  </div>
- <div class="form-row">
- <label>Hash</label>
- <input asp-for="Usuario.hash" />
- </div>
- <div class="form-actions">
+ <div class="usuarios-actions">
  <button type="submit" class="btn btn-primary">Guardar</button>
  <a asp-page="Index" class="btn btn-secondary">Volver</a>
  </div>
-</form>
-
-@section Scripts {
- <partial name="_ValidationScriptsPartial" />
-}
+ </form>
+ @section Scripts { <partial name="_ValidationScriptsPartial" /> }
+</section>

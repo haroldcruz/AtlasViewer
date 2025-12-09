@@ -19,13 +19,11 @@ namespace AtlasViewer.Pages
 
         public IActionResult OnGet()
         {
-            // Si ya está autenticado, redirigir a la página adecuada según rol
             if (User?.Identity?.IsAuthenticated ?? false)
             {
-                if (User.IsInRole("Administrador"))
-                {
-                    return LocalRedirect(Url.Content("/Admin/Index"));
-                }
+                // Si debe cambiar contraseña, enviarlo
+                var name = User.Identity!.Name!;
+                // No tenemos usuario completo en claims, redirigir a usuarios por ahora
                 return LocalRedirect(Url.Content("/Usuarios/Index"));
             }
             return Page();
@@ -41,7 +39,6 @@ namespace AtlasViewer.Pages
                 return Page();
             }
 
-            // Buscar por nombre primero; si no existe, probar por email
             var usuario = await _usuarios.GetByNombreAsync(Username) ?? await _usuarios.GetByEmailAsync(Username);
             if (usuario is null)
             {
@@ -60,22 +57,28 @@ namespace AtlasViewer.Pages
                 return Page();
             }
 
-            // Construir claims: nombre y rol básico. Ajusta para cargar roles reales si existen.
-            var claims = new List<Claim>
+            // Si debe cambiar contraseña, redirigir al cambio con claims mínimos
+            if (usuario.mustChangePassword)
+            {
+                var tempClaims = new List<Claim> { new Claim(ClaimTypes.Name, usuario.nombre ?? Username!) };
+                var identityTmp = new ClaimsIdentity(tempClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identityTmp));
+                return LocalRedirect(Url.Content("/Account/ChangePassword"));
+            }
+
+            var fullClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, usuario.nombre ?? Username!)
             };
-            // Si el modelo tiene un campo 'rol' numérico, mapear '1' a Administrador
             if (usuario.rol ==1)
             {
-                claims.Add(new Claim(ClaimTypes.Role, "Administrador"));
+                fullClaims.Add(new Claim(ClaimTypes.Role, "Administrador"));
             }
 
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var identity = new ClaimsIdentity(fullClaims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            // Redirigir según rol
             if (usuario.rol ==1)
             {
                 TempData["PopoutTitle"] = "Bienvenido";

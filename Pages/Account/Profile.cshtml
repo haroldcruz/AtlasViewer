@@ -1,0 +1,22 @@
+@page
+@model AtlasViewer.Pages.Account.ProfileModel
+@{
+ ViewData["Title"] = "Mi perfil";
+ Layout = "../Shared/_Layout";
+}
+<section class="container" aria-labelledby="profile-title">
+ <h1 id="profile-title" class="h4">Mi perfil</h1>
+ <form method="post" class="usuarios-form">
+ <div class="form-row">
+ <label for="nombre">Nombre</label>
+ <input id="nombre" asp-for="Nombre" class="form-control" />
+ </div>
+ <div class="form-row">
+ <label for="email">Email</label>
+ <input id="email" asp-for="Email" class="form-control" />
+ </div>
+ <div class="usuarios-actions">
+ <button type="submit" class="btn btn-primary">Guardar</button>
+ </div>
+ </form>
+</section>

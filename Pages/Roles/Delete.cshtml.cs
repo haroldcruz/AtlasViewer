@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace AtlasViewer.Pages.Roles
 {
- public class EditModel : PageModel
+ public class DeleteModel : PageModel
  {
  private readonly IRolService _roles;
- public EditModel(IRolService roles) { _roles = roles; }
+ public DeleteModel(IRolService roles) { _roles = roles; }
  [BindProperty] public Rol Rol { get; set; } = new Rol();
  public async Task<IActionResult> OnGetAsync(string id)
  {
@@ -18,9 +18,8 @@ namespace AtlasViewer.Pages.Roles
  }
  public async Task<IActionResult> OnPostAsync()
  {
- if (!ModelState.IsValid) return Page();
- await _roles.UpdateAsync(Rol);
- TempData["PopoutTitle"] = "Rol actualizado";
+ await _roles.DeleteAsync(Rol.Id!);
+ TempData["PopoutTitle"] = "Rol eliminado";
  TempData["PopoutMessage"] = Rol.nombre_rol;
  TempData["PopoutIcon"] = "success";
  return RedirectToPage("Index");
