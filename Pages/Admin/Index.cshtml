@@ -1,0 +1,24 @@
+@page
+@model AtlasViewer.Pages.Admin.IndexModel
+@{
+ ViewData["Title"] = "Panel de administración";
+ Layout = "../Shared/_Layout";
+}
+<section class="container admin-page">
+ <h1 class="h4">Panel de administración</h1>
+ <p class="text-muted">Solo usuarios con rol Administrador pueden acceder.</p>
+ <nav class="admin-nav nav nav-pills gap-2 my-3">
+ <a class="btn btn-primary" asp-page="/Usuarios/Index">Administrar Usuarios</a>
+ <a class="btn btn-secondary" asp-page="/Admin/Roles">Administrar Roles</a>
+ </nav>
+ <div class="row g-3">
+ <div class="col-md-6">
+ <div class="card admin-card border-secondary">
+ <div class="card-body">
+ <h2 class="h5">Resumen</h2>
+ <p>Este panel centraliza la administración de usuarios y roles.</p>
+ </div>
+ </div>
+ </div>
+ </div>
+</section>

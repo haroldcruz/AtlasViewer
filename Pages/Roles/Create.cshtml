@@ -1,0 +1,23 @@
+@page
+@model AtlasViewer.Pages.Roles.CreateModel
+@{
+ ViewData["Title"] = "Crear Rol";
+ Layout = "../Shared/_Layout";
+}
+<section class="container roles-page" aria-labelledby="role-create-title">
+ <h1 id="role-create-title" class="h4">Crear Rol</h1>
+ <form method="post" class="usuarios-form">
+ <div class="form-row">
+ <label for="nombre">Nombre</label>
+ <input id="nombre" asp-for="Rol.nombre" class="form-control" />
+ </div>
+ <div class="form-row">
+ <label for="codigo">Código</label>
+ <input id="codigo" asp-for="Rol.codigo" type="number" class="form-control" />
+ </div>
+ <div class="usuarios-actions">
+ <button type="submit" class="btn btn-primary">Guardar</button>
+ <a asp-page="Index" class="btn btn-secondary">Volver</a>
+ </div>
+ </form>
+</section>

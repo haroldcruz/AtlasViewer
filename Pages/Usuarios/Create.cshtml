@@ -1,0 +1,36 @@
+@page
+@model AtlasViewer.Pages.Usuarios.CreateModel
+@{
+ ViewData["Title"] = "Crear Usuario";
+ Layout = "../Shared/_Layout";
+}
+<section class="container usuarios-page" aria-labelledby="usuarios-create-title">
+ <h1 id="usuarios-create-title" class="h4 usuarios-title">Crear Usuario</h1>
+ <form method="post" class="usuarios-form">
+ <div class="form-row">
+ <label for="nombre">Nombre</label>
+ <input id="nombre" asp-for="Usuario.nombre" class="form-control" />
+ <span asp-validation-for="Usuario.nombre" class="text-danger"></span>
+ </div>
+ <div class="form-row">
+ <label for="email">Email</label>
+ <input id="email" asp-for="Usuario.email" class="form-control" />
+ <span asp-validation-for="Usuario.email" class="text-danger"></span>
+ </div>
+ <div class="form-row">
+ <label for="rol">Rol</label>
+ <input id="rol" asp-for="Usuario.rol" type="number" class="form-control" />
+ <span asp-validation-for="Usuario.rol" class="text-danger"></span>
+ </div>
+ <div class="alert alert-info" role="status">
+ Al crear, se asignará una contraseña temporal "abc123" y se generará su hash automáticamente. El usuario deberá cambiarla tras el primer inicio de sesión.
+ </div>
+ <div class="usuarios-actions">
+ <button type="submit" class="btn btn-primary">Guardar</button>
+ <a asp-page="Index" class="btn btn-secondary">Volver</a>
+ </div>
+ </form>
+ @section Scripts {
+ <partial name="_ValidationScriptsPartial" />
+ }
+</section>

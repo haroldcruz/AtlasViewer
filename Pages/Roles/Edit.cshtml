@@ -1,0 +1,24 @@
+@page "{id}"
+@model AtlasViewer.Pages.Roles.EditModel
+@{
+ ViewData["Title"] = "Editar Rol";
+ Layout = "../Shared/_Layout";
+}
+<section class="container roles-page" aria-labelledby="role-edit-title">
+ <h1 id="role-edit-title" class="h4">Editar Rol</h1>
+ <form method="post" class="usuarios-form">
+ <input type="hidden" asp-for="Rol.Id" />
+ <div class="form-row">
+ <label for="nombre">Nombre</label>
+ <input id="nombre" asp-for="Rol.nombre" class="form-control" />
+ </div>
+ <div class="form-row">
+ <label for="codigo">Código</label>
+ <input id="codigo" asp-for="Rol.codigo" type="number" class="form-control" />
+ </div>
+ <div class="usuarios-actions">
+ <button type="submit" class="btn btn-primary">Guardar</button>
+ <a asp-page="Index" class="btn btn-secondary">Volver</a>
+ </div>
+ </form>
+</section>

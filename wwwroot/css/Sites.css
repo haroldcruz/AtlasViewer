@@ -1,0 +1,79 @@
+/* Unified light theme for all views */
+:root{
+ --bg:#f5f7fb; /* app background */
+ --surface:#ffffff; /* panels/cards/forms */
+ --text:#0f172a; /* primary text */
+ --muted:#475569; /* secondary text */
+ --border:#e2e8f0; /* borders */
+ --accent:#0ea5e9; /* primary brand */
+ --accent-strong:#0284c7; /* primary dark */
+ --success:#22c55e; /* success */
+ --danger:#ef4444; /* danger */
+}
+
+/* Global */
+html,body{min-height:100vh;background-color:var(--bg);color:var(--text);} 
+
+/* Layout */
+.app-shell{display:flex;min-height:100vh;}
+.content{flex:1;background-color:var(--bg);} 
+.navbar{border-bottom:1px solid var(--border);background-color:#0f172a !important;color:#fff;}
+.sidebar{width:280px;background-color:#0f172a;color:#e5e7eb;} 
+.sidebar a{color:#e5e7eb;text-decoration:none;}
+.sidebar .brand{padding:1rem;display:flex;align-items:center;gap:0.75rem;border-bottom:1px solid #1f2937;}
+.sidebar .logo{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--success));}
+.sidebar .userbox{padding:1rem;border-bottom:1px solid #1f2937;}
+
+/* Responsive */
+@media (max-width:992px){ .sidebar{display:none;} .app-shell{display:block;} .content .container{padding-left:1rem;padding-right:1rem;} }
+@media (min-width:993px){ .content .container{max-width:1140px;} }
+
+/* Buttons (unified) */
+.btn-primary{background-color:var(--accent);border-color:var(--accent-strong);} 
+.btn-success{background-color:var(--success);border-color:#16a34a;} 
+.btn-outline-danger{border-color:var(--danger);color:var(--danger);} 
+.btn-outline-light{border-color:#94a3b8;color:#e5e7eb;} 
+
+/* Cards & panels */
+.card, .table-wrap, .admin-card, .login-card{background-color:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:0.75rem;}
+.card-header{background-color:var(--surface);border-bottom:1px solid var(--border);color:var(--text);} 
+
+/* Forms */
+.form-label{color:var(--text);} 
+.form-control{background:#ffffff;color:var(--text);border-color:#cbd5e1;border-radius:0.5rem;} 
+.form-control::placeholder{color:#94a3b8;} 
+.form-control:focus{border-color:var(--accent);box-shadow:0 0.25rem rgba(14,165,233,.25);} 
+
+/* Module: Login */
+.login-page{padding-top:3rem;padding-bottom:3rem;} 
+.login-actions{display:grid;gap:0.75rem;} 
+@media (max-width:576px){ .login-page{padding-top:2rem;padding-bottom:2rem;} }
+
+/* Module: Admin */
+.admin-page{padding-top:1.5rem;padding-bottom:1.5rem;} 
+.admin-nav .btn{min-width:200px;} 
+@media (max-width:768px){ .admin-nav{display:grid;gap:0.5rem;} }
+
+/* Module: Usuarios */
+.usuarios-page{padding-top:1rem;padding-bottom:1rem;} 
+.usuarios-title{margin-bottom:1rem;} 
+.usuarios-actions{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:1rem;} 
+@media (max-width:576px){ .usuarios-actions{flex-direction:column;} }
+
+/* Responsive tables (unified) */
+.table-wrap{overflow:hidden;} 
+.table-responsive{width:100%;overflow-x:auto;} 
+.table{margin-bottom:0;color:var(--text);} 
+.table thead th{background:#f1f5f9;border-bottom:1px solid var(--border);color:var(--text);} 
+.table tbody td{border-top:1px solid var(--border);} 
+.table a.btn{white-space:nowrap;} 
+
+/* Module: Roles */
+.roles-page{padding-top:1rem;padding-bottom:1rem;} 
+.roles-table{width:100%;border-collapse:collapse;background:var(--surface);color:var(--text);} 
+.roles-table th,.roles-table td{border:1px solid var(--border);padding:0.5rem;} 
+.roles-table th{background:#f1f5f9;} 
+
+/* Offcanvas */
+.offcanvas.bg-dark .offcanvas-title{color:#ffffff;} 
+.offcanvas.bg-dark .btn-close-white{filter:invert(1);} 

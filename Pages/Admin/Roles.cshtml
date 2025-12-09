@@ -1,0 +1,23 @@
+@page
+@model AtlasViewer.Pages.Admin.RolesModel
+@{
+ ViewData["Title"] = "Administración de Roles";
+}
+<h1>Administración de Roles</h1>
+<p>Listado y gestión de roles.</p>
+
+<p>
+ <a asp-page="/Admin/Index">Volver al Panel</a>
+</p>
+
+<table class="table">
+ <thead>
+ <tr>
+ <th>Nombre</th>
+ </tr>
+ </thead>
+ <tbody>
+ @* TODO: Render roles desde la BD *@
+ <tr><td>Administrador</td></tr>
+ </tbody>
+</table>

@@ -1,0 +1,16 @@
+@page "{id}"
+@model AtlasViewer.Pages.Usuarios.DeleteModel
+@{
+ ViewData["Title"] = "Eliminar Usuario";
+ Layout = "../Shared/_Layout";
+}
+
+<h2 class="usuarios-title">Eliminar Usuario</h2>
+<p>¿Seguro que deseas eliminar este usuario?</p>
+
+<form method="post">
+ <div class="form-actions">
+ <button type="submit" class="btn btn-danger">Eliminar</button>
+ <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+ </div>
+</form>

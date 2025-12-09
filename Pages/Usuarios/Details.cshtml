@@ -1,0 +1,20 @@
+@page "{id}"
+@model AtlasViewer.Pages.Usuarios.DetailsModel
+@{
+ ViewData["Title"] = "Detalle de Usuario";
+ Layout = "../Shared/_Layout";
+}
+
+<h2 class="usuarios-title">Detalle de Usuario</h2>
+
+<div class="usuarios-card">
+ <div><strong>Nombre:</strong> @Model.Usuario.nombre</div>
+ <div><strong>Email:</strong> @Model.Usuario.email</div>
+ <div><strong>Rol:</strong> @Model.Usuario.rol</div>
+ <div><strong>Hash:</strong> @Model.Usuario.hash</div>
+</div>
+
+<div class="form-actions">
+ <a asp-page="Edit" asp-route-id="@Model.Usuario.Id" class="btn btn-primary">Editar</a>
+ <a asp-page="Index" class="btn btn-secondary">Volver</a>
+</div>

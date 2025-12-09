@@ -1,0 +1,38 @@
+@page "{id}"
+@model AtlasViewer.Pages.Usuarios.EditModel
+@{
+ ViewData["Title"] = "Editar Usuario";
+ Layout = "../Shared/_Layout";
+}
+
+<h2 class="usuarios-title">Editar Usuario</h2>
+
+<form method="post" class="usuarios-form">
+ <div class="form-row">
+ <label>Nombre</label>
+ <input asp-for="Usuario.nombre" />
+ <span asp-validation-for="Usuario.nombre" class="text-danger"></span>
+ </div>
+ <div class="form-row">
+ <label>Email</label>
+ <input asp-for="Usuario.email" />
+ <span asp-validation-for="Usuario.email" class="text-danger"></span>
+ </div>
+ <div class="form-row">
+ <label>Rol</label>
+ <input asp-for="Usuario.rol" type="number" />
+ <span asp-validation-for="Usuario.rol" class="text-danger"></span>
+ </div>
+ <div class="form-row">
+ <label>Hash</label>
+ <input asp-for="Usuario.hash" />
+ </div>
+ <div class="form-actions">
+ <button type="submit" class="btn btn-primary">Guardar</button>
+ <a asp-page="Index" class="btn btn-secondary">Volver</a>
+ </div>
+</form>
+
+@section Scripts {
+ <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,26 @@
+@page
+@model AtlasViewer.Pages.IndexModel
+@{
+ ViewData["Title"] = "Inicio";
+}
+<section aria-labelledby="welcome-title">
+ <h1 id="welcome-title">Bienvenido</h1>
+ @if (User?.Identity?.IsAuthenticated ?? false)
+ {
+ <p>Hola, <strong>@User.Identity!.Name</strong>.</p>
+ <p>
+ @if (User.IsInRole("Administrador"))
+ { @:Usted tiene rol <strong>Administrador</strong> y acceso al panel.
+ <a class="btn primary" asp-page="/Admin/Index">Ir al Panel</a>
+ }
+ else
+ { @:Usted está autenticado como <strong>Usuario</strong>.
+ }
+ </p>
+ }
+ else
+ {
+ <p>No ha iniciado sesión.</p>
+ <a class="btn primary" asp-page="/Login">Iniciar sesión</a>
+ }
+</section>
