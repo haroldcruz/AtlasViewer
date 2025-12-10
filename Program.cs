@@ -54,28 +54,27 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// Garantizar charset UTF-8 en respuestas HTML
+// Middleware robusto: fuerza header Content-Type con charset utf-8 para HTML
 app.Use(async (context, next) =>
 {
- // Establecer/ajustar charset en el momento apropiado
- context.Response.OnStarting(() =>
+ await next();
+
+ // Solo páginas HTML (Razor Pages/Views suelen no tener extensión en la ruta)
+ var path = context.Request.Path.Value ?? string.Empty;
+ var isHtmlRoute = string.IsNullOrEmpty(System.IO.Path.GetExtension(path)) || path.EndsWith(".cshtml", StringComparison.OrdinalIgnoreCase);
+
+ if (isHtmlRoute)
  {
  var ct = context.Response.ContentType;
- if (!string.IsNullOrEmpty(ct) && ct.StartsWith("text/html", StringComparison.OrdinalIgnoreCase))
- {
- if (!ct.Contains("charset=", StringComparison.OrdinalIgnoreCase))
+ if (string.IsNullOrEmpty(ct))
  {
  context.Response.ContentType = "text/html; charset=utf-8";
  }
- else if (!ct.Contains("utf-8", StringComparison.OrdinalIgnoreCase))
+ else if (ct.StartsWith("text/html", StringComparison.OrdinalIgnoreCase) && !ct.Contains("charset=", StringComparison.OrdinalIgnoreCase))
  {
- // Forzar utf-8 si algún proxy estableció otro charset
  context.Response.ContentType = "text/html; charset=utf-8";
  }
  }
- return Task.CompletedTask;
- });
- await next();
 });
 
 app.UseRouting();
