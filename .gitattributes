@@ -3,6 +3,9 @@
 ###############################################################################
 * text=auto
 
+# Ensure Razor views are UTF-8 in working tree
+*.cshtml text working-tree-encoding=UTF-8
+
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
