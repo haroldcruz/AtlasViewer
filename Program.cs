@@ -53,6 +53,31 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// Garantizar charset UTF-8 en respuestas HTML
+app.Use(async (context, next) =>
+{
+ // Establecer/ajustar charset en el momento apropiado
+ context.Response.OnStarting(() =>
+ {
+ var ct = context.Response.ContentType;
+ if (!string.IsNullOrEmpty(ct) && ct.StartsWith("text/html", StringComparison.OrdinalIgnoreCase))
+ {
+ if (!ct.Contains("charset=", StringComparison.OrdinalIgnoreCase))
+ {
+ context.Response.ContentType = "text/html; charset=utf-8";
+ }
+ else if (!ct.Contains("utf-8", StringComparison.OrdinalIgnoreCase))
+ {
+ // Forzar utf-8 si algún proxy estableció otro charset
+ context.Response.ContentType = "text/html; charset=utf-8";
+ }
+ }
+ return Task.CompletedTask;
+ });
+ await next();
+});
+
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
