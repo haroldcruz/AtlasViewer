@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using MongoDB.Driver;
 using Microsoft.AspNetCore.StaticFiles;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,7 @@ builder.Services.AddSingleton<IRolService, RolService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(options =>
 {
-    options.Conventions.AuthorizeFolder("/Admin", "AdminOnly");
+ options.Conventions.AuthorizeFolder("/Admin", "AdminOnly");
 });
 
 // Mongo client
@@ -26,8 +27,8 @@ var databaseName = mongoConfig.GetValue<string>("Database");
 builder.Services.AddSingleton<IMongoClient>(_ => new MongoClient(connectionString));
 builder.Services.AddSingleton(provider =>
 {
-    var client = provider.GetRequiredService<IMongoClient>();
-    return client.GetDatabase(databaseName);
+ var client = provider.GetRequiredService<IMongoClient>();
+ return client.GetDatabase(databaseName);
 });
 
 builder.Services.AddScoped<AtlasViewer.Services.MongoService>();
@@ -56,7 +57,6 @@ app.UseHttpsRedirection();
 
 // Force UTF-8 for static files (e.g., any HTML under wwwroot if present)
 var provider = new FileExtensionContentTypeProvider();
-// Ensure .html served with charset
 app.UseStaticFiles(new StaticFileOptions
 {
  ContentTypeProvider = provider,
@@ -69,7 +69,6 @@ app.Use(async (context, next) =>
 {
  await next();
 
- // Solo páginas HTML (Razor Pages/Views suelen no tener extensión en la ruta)
  var path = context.Request.Path.Value ?? string.Empty;
  var isHtmlRoute = string.IsNullOrEmpty(System.IO.Path.GetExtension(path)) || path.EndsWith(".cshtml", StringComparison.OrdinalIgnoreCase);
 
@@ -85,6 +84,14 @@ app.Use(async (context, next) =>
  context.Response.ContentType = "text/html; charset=utf-8";
  }
  }
+});
+
+// Endpoint diagnóstico de cultura
+app.MapGet("/diag/culture", () =>
+{
+ var current = CultureInfo.CurrentCulture.Name;
+ var ui = CultureInfo.CurrentUICulture.Name;
+ return Results.Content($"Culture: {current}, UICulture: {ui}", "text/plain; charset=utf-8");
 });
 
 app.UseRouting();
