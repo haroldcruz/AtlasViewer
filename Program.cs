@@ -2,6 +2,7 @@ using AtlasViewer.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using MongoDB.Driver;
+using Microsoft.AspNetCore.StaticFiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,7 +53,16 @@ if (!app.Environment.IsDevelopment())
  app.UseHsts();
 }
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
+// Force UTF-8 for static files (e.g., any HTML under wwwroot if present)
+var provider = new FileExtensionContentTypeProvider();
+// Ensure .html served with charset
+app.UseStaticFiles(new StaticFileOptions
+{
+ ContentTypeProvider = provider,
+ ServeUnknownFileTypes = true,
+ DefaultContentType = "text/html; charset=utf-8"
+});
 
 // Middleware robusto: fuerza header Content-Type con charset utf-8 para HTML
 app.Use(async (context, next) =>
