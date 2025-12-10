@@ -1,15 +1,15 @@
 version: "1"
 projects:
-- name: AtlasViewer
- environments:
- - name: Production
- services:
- - type: web
- name: AtlasViewer
- runtime: docker
- repo: https://github.com/haroldcruz/AtlasViewer
- plan: free
- region: virginia
- dockerContext: .
- dockerfilePath: ./Dockerfile
- autoDeployTrigger: commit
+ - name: AtlasViewer
+   environments:
+   - name: Production
+     services:
+     - type: web
+       name: AtlasViewer
+       runtime: docker
+       repo: https://github.com/haroldcruz/AtlasViewer
+       plan: free
+       region: virginia
+       dockerContext: .
+       dockerfilePath: ./Dockerfile
+       autoDeployTrigger: commit
