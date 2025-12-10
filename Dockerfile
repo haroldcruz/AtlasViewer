@@ -14,13 +14,21 @@ RUN dotnet publish "AtlasViewer.csproj" -c Release -o /app/publish /p:UseAppHost
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-# Bind to Render-provided PORT
-ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT}
+# Bind to Render-provided PORT and ensure UTF-8 locale
+ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT} \
+ DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+# Install locales and set UTF-8 default (Debian-based ASP.NET image)
+RUN apt-get update && apt-get install -y locales && \
+ sed -i '/es_ES.UTF-8/s/^# //g' /etc/locale.gen && \
+ sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
+ locale-gen es_ES.UTF-8 en_US.UTF-8 && \
+ rm -rf /var/lib/apt/lists/*
+ENV LANG=es_ES.UTF-8 \
+ LC_ALL=es_ES.UTF-8 \
+ LANGUAGE=es_ES:en
 
 # copy published output
 COPY --from=build /app/publish .
-
-# optional: health port exposure (Render detects from logs, EXPOSE not required)
-# EXPOSE8080
 
 ENTRYPOINT ["dotnet", "AtlasViewer.dll"]
