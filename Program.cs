@@ -81,18 +81,24 @@ var app = builder.Build();
 // Middleware de cabeceras de seguridad
 app.Use(async (context, next) =>
 {
- // HSTS - HTTP Strict Transport Security
- context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+ // Generar nonce único para CSP
+ var nonce = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(16));
+ context.Items["csp-nonce"] = nonce;
  
- // CSP - Content Security Policy
+ // HSTS - HTTP Strict Transport Security
+ context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+ 
+ // CSP - Content Security Policy con nonce
  context.Response.Headers.Append("Content-Security-Policy", 
- "default-src 'self'; " +
- "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
- "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
- "img-src 'self' data: https:; " +
- "font-src 'self' data: https://cdn.jsdelivr.net; " +
- "connect-src 'self'; " +
- "frame-ancestors 'self'");
+ $"default-src 'self'; " +
+ $"script-src 'self' 'nonce-{nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+ $"style-src 'self' 'nonce-{nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+ $"img-src 'self' data: https:; " +
+ $"font-src 'self' data: https://cdn.jsdelivr.net; " +
+ $"connect-src 'self'; " +
+ $"frame-ancestors 'self'; " +
+ $"base-uri 'self'; " +
+ $"form-action 'self'");
  
  // X-Frame-Options - Previene clickjacking
  context.Response.Headers.Append("X-Frame-Options", "SAMEORIGIN");
