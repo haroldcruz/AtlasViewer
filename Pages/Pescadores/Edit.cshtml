@@ -49,7 +49,7 @@
     </div>
 </section>
 
-<script nonce="@Context.Items["csp-nonce"]">
+<script nonce="@@Context.Items["csp-nonce"]">
     document.querySelector('form').addEventListener('submit', function(e) {
         const embarcacionesText = document.getElementById('embarcacionesText').value;
         const embarcaciones = embarcacionesText.split(',')

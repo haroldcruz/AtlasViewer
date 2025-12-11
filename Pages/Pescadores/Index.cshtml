@@ -9,7 +9,7 @@
     
     @if (!string.IsNullOrEmpty(Model.SuccessMessage))
     {
-        <script nonce="@Context.Items["csp-nonce"]">
+        <script nonce="@@Context.Items["csp-nonce"]">
             Swal.fire({
                 icon: 'success',
                 title: 'Éxito',

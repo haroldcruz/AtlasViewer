@@ -8,6 +8,8 @@ namespace AtlasViewer.Services
  private readonly IMongoDatabase _database;
  private readonly IMongoCollection<Item> _items;
 
+ public IMongoDatabase Database => _database;
+
  public MongoService(IMongoDatabase database)
  {
  _database = database;
