@@ -96,6 +96,21 @@ app.Use(async (context, next) =>
  var nonce = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(16));
  context.Items["csp-nonce"] = nonce;
  
+ // Control de caché para páginas sensibles
+ var path = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
+ var isSensitivePage = path.Contains("/login") || 
+                       path.Contains("/account") || 
+                       path.Contains("/admin") || 
+                       path.Contains("/usuarios") || 
+                       path.Contains("/roles");
+ 
+ if (isSensitivePage)
+ {
+ context.Response.Headers.Append("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+ context.Response.Headers.Append("Pragma", "no-cache");
+ context.Response.Headers.Append("Expires", "0");
+ }
+ 
  // HSTS - HTTP Strict Transport Security
  context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
  
