@@ -9,15 +9,10 @@
     
     @if (!string.IsNullOrEmpty(Model.SuccessMessage))
     {
-        <script nonce="@Context.Items["csp-nonce"]">
-            Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: '@Model.SuccessMessage',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        </script>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>¡Éxito!</strong> @Model.SuccessMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     }
     
     <div class="table-wrap">

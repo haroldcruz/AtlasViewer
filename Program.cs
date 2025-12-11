@@ -60,8 +60,6 @@ builder.Services.AddRazorPages(options =>
  // Editor y Administrador pueden acceder a gestión de datos
  options.Conventions.AuthorizeFolder("/Pescadores", "EditorOrAdmin");
  options.Conventions.AuthorizeFolder("/Embarcaciones", "EditorOrAdmin");
- 
- options.HtmlHelperOptions.ClientValidationEnabled = true;
 });
 
 // Mongo client
