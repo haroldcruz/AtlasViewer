@@ -68,7 +68,63 @@ builder.Services.AddAuthorization(options =>
  options.AddPolicy("AdminOnly", policy => policy.RequireRole("Administrador"));
 });
 
+// Configurar HSTS
+builder.Services.AddHsts(options =>
+{
+ options.Preload = true;
+ options.IncludeSubDomains = true;
+ options.MaxAge = TimeSpan.FromDays(365);
+});
+
 var app = builder.Build();
+
+// Middleware de cabeceras de seguridad
+app.Use(async (context, next) =>
+{
+ // HSTS - HTTP Strict Transport Security
+ context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+ 
+ // CSP - Content Security Policy
+ context.Response.Headers.Append("Content-Security-Policy", 
+ "default-src 'self'; " +
+ "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
+ "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
+ "img-src 'self' data: https:; " +
+ "font-src 'self' data: https://cdn.jsdelivr.net; " +
+ "connect-src 'self'; " +
+ "frame-ancestors 'self'");
+ 
+ // X-Frame-Options - Previene clickjacking
+ context.Response.Headers.Append("X-Frame-Options", "SAMEORIGIN");
+ 
+ // X-Content-Type-Options - Previene MIME sniffing
+ context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+ 
+ // Referrer-Policy - Control de información de referencia
+ context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+ 
+ // Permissions-Policy - Control de APIs del navegador
+ context.Response.Headers.Append("Permissions-Policy", 
+ "geolocation=(), microphone=(), camera=(), payment=()");
+ 
+ // Cross-Origin-Embedder-Policy
+ context.Response.Headers.Append("Cross-Origin-Embedder-Policy", "require-corp");
+ 
+ // Cross-Origin-Opener-Policy
+ context.Response.Headers.Append("Cross-Origin-Opener-Policy", "same-origin");
+ 
+ // Cross-Origin-Resource-Policy
+ context.Response.Headers.Append("Cross-Origin-Resource-Policy", "same-origin");
+ 
+ // X-XSS-Protection (legacy pero útil)
+ context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+ 
+ // Remover header Server para no exponer información
+ context.Response.Headers.Remove("Server");
+ context.Response.Headers.Remove("X-Powered-By");
+ 
+ await next();
+});
 
 if (!app.Environment.IsDevelopment())
 {
