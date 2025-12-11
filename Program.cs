@@ -22,8 +22,27 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 
 // Registrar servicios en DI
 builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection("Mongo"));
+builder.Services.AddSingleton<MongoService>();
 builder.Services.AddSingleton<IUsuarioService, UsuarioService>();
 builder.Services.AddSingleton<IRolService, RolService>();
+
+// Servicios de catálogos
+builder.Services.AddSingleton<IPescadorService, PescadorService>();
+builder.Services.AddSingleton<IEmbarcacionService, EmbarcacionService>();
+builder.Services.AddSingleton<IEspecieService, EspecieService>();
+builder.Services.AddSingleton<IInsumoService, InsumoService>();
+builder.Services.AddSingleton<IProveedorService, ProveedorService>();
+builder.Services.AddSingleton<IArtePescaService, ArtePescaService>();
+builder.Services.AddSingleton<ISitioPescaService, SitioPescaService>();
+
+// Servicios operativos
+builder.Services.AddSingleton<ICompraInsumoService, CompraInsumoService>();
+builder.Services.AddSingleton<IRegistroCapturaService, RegistroCapturaService>();
+builder.Services.AddSingleton<ICapturaDetalleService, CapturaDetalleService>();
+builder.Services.AddSingleton<IMonitoreoBiologicoService, MonitoreoBiologicoService>();
+builder.Services.AddSingleton<IPescaIncidentalService, PescaIncidentalService>();
+builder.Services.AddSingleton<IPescaFantasmaService, PescaFantasmaService>();
+builder.Services.AddSingleton<IVentaEspecieService, VentaEspecieService>();
 
 // MVC y Razor
 builder.Services.AddControllersWithViews();
