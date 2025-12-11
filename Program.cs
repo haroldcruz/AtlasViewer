@@ -34,6 +34,7 @@ builder.Services.AddRazorPages(options =>
  options.Conventions.AllowAnonymousToPage("/Login");
  options.Conventions.AllowAnonymousToPage("/Logout");
  options.Conventions.AllowAnonymousToPage("/Index");
+ options.Conventions.AllowAnonymousToPage("/AccessDenied");
 })
 .AddViewOptions(options =>
 {
@@ -59,7 +60,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
  .AddCookie(options =>
  {
  options.LoginPath = "/Login";
- options.AccessDeniedPath = "/Login";
+ options.AccessDeniedPath = "/AccessDenied";
  });
 
 builder.Services.AddAuthorization(options =>

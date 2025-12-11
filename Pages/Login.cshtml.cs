@@ -21,7 +21,7 @@ namespace AtlasViewer.Pages
         {
             if (User?.Identity?.IsAuthenticated ?? false)
             {
-                // Si debe cambiar contraseña, enviarlo
+                // Si debe cambiar contraseÃ±a, enviarlo
                 var name = User.Identity!.Name!;
                 // No tenemos usuario completo en claims, redirigir a usuarios por ahora
                 return LocalRedirect(Url.Content("/Usuarios/Index"));
@@ -33,8 +33,8 @@ namespace AtlasViewer.Pages
         {
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
             {
-                TempData["PopoutTitle"] = "Inicio de sesión";
-                TempData["PopoutMessage"] = "Ingrese usuario y contraseña.";
+                TempData["PopoutTitle"] = "Inicio de sesiÃ³n";
+                TempData["PopoutMessage"] = "Ingrese usuario y contraseÃ±a.";
                 TempData["PopoutIcon"] = "warning";
                 return Page();
             }
@@ -42,8 +42,8 @@ namespace AtlasViewer.Pages
             var usuario = await _usuarios.GetByNombreAsync(Username) ?? await _usuarios.GetByEmailAsync(Username);
             if (usuario is null)
             {
-                TempData["PopoutTitle"] = "Inicio de sesión";
-                TempData["PopoutMessage"] = "Usuario o contraseña inválidos.";
+                TempData["PopoutTitle"] = "Inicio de sesiÃ³n";
+                TempData["PopoutMessage"] = "Usuario o contraseÃ±a invÃ¡lidos.";
                 TempData["PopoutIcon"] = "error";
                 return Page();
             }
@@ -51,13 +51,13 @@ namespace AtlasViewer.Pages
             var ok = await _usuarios.VerifyPasswordAsync(usuario, Password);
             if (!ok)
             {
-                TempData["PopoutTitle"] = "Inicio de sesión";
-                TempData["PopoutMessage"] = "Usuario o contraseña inválidos.";
+                TempData["PopoutTitle"] = "Inicio de sesiÃ³n";
+                TempData["PopoutMessage"] = "Usuario o contraseÃ±a invÃ¡lidos.";
                 TempData["PopoutIcon"] = "error";
                 return Page();
             }
 
-            // Si debe cambiar contraseña, redirigir al cambio con claims mínimos
+            // Si debe cambiar contraseÃ±a, redirigir al cambio con claims mÃ­nimos
             if (usuario.mustChangePassword)
             {
                 var tempClaims = new List<Claim> { new Claim(ClaimTypes.Name, usuario.nombre ?? Username!) };
@@ -91,7 +91,7 @@ namespace AtlasViewer.Pages
                 TempData["PopoutTitle"] = "Bienvenido";
                 TempData["PopoutMessage"] = usuario.nombre ?? Username!;
                 TempData["PopoutIcon"] = "success";
-                return LocalRedirect(Url.Content("/Usuarios/Index"));
+                return LocalRedirect(Url.Content("/Account/Profile"));
             }
         }
     }
