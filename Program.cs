@@ -104,14 +104,17 @@ app.Use(async (context, next) =>
  $"default-src 'none'; " +
  $"script-src 'self' 'nonce-{nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
  $"style-src 'self' 'nonce-{nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
- $"img-src 'self' data: https:; " +
+ $"img-src 'self' data:; " +
  $"font-src 'self' data: https://cdn.jsdelivr.net; " +
  $"connect-src 'self'; " +
  $"frame-ancestors 'self'; " +
  $"base-uri 'self'; " +
  $"form-action 'self'; " +
  $"object-src 'none'; " +
- $"manifest-src 'self'");
+ $"manifest-src 'self'; " +
+ $"media-src 'none'; " +
+ $"worker-src 'none'; " +
+ $"frame-src 'none'");
  
  // X-Frame-Options - Previene clickjacking
  context.Response.Headers.Append("X-Frame-Options", "SAMEORIGIN");
