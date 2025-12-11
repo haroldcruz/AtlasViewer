@@ -59,14 +59,7 @@ builder.Services.AddRazorPages(options =>
  
  // Editor y Administrador pueden acceder a gestión de datos
  options.Conventions.AuthorizeFolder("/Pescadores", "EditorOrAdmin");
- 
- // Permitir acceso sin autenticación a Login y Logout
- options.Conventions.AllowAnonymousToPage("/Login");
- options.Conventions.AllowAnonymousToPage("/Logout");
- options.Conventions.AllowAnonymousToPage("/Index");
- options.Conventions.AllowAnonymousToPage("/AccessDenied");
-})
-.AddViewOptions(options =>
+    options.Conventions.AuthorizeFolder("/Embarcaciones", "EditorOrAdmin");
 {
  options.HtmlHelperOptions.ClientValidationEnabled = true;
 });

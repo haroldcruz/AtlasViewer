@@ -1,0 +1,130 @@
+@page
+@model AtlasViewer.Pages.Embarcaciones.CreateModel
+@{
+    ViewData["Title"] = "Nueva Embarcación";
+    Layout = "../Shared/_Layout";
+}
+<section class="container create-embarcacion-page" aria-labelledby="create-title">
+    <h1 id="create-title" class="h4">Crear Nueva Embarcación</h1>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form method="post" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                
+                <div class="mb-3">
+                    <label asp-for="Embarcacion.nombre" class="form-label">Nombre de la Embarcación</label>
+                    <input asp-for="Embarcacion.nombre" class="form-control" required maxlength="200" />
+                    <span asp-validation-for="Embarcacion.nombre" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label asp-for="Embarcacion.matricula" class="form-label">Matrícula</label>
+                    <input asp-for="Embarcacion.matricula" class="form-control" required maxlength="50" />
+                    <span asp-validation-for="Embarcacion.matricula" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label asp-for="Embarcacion.propietario" class="form-label">Propietario</label>
+                    <input asp-for="Embarcacion.propietario" class="form-control" maxlength="200" />
+                    <span asp-validation-for="Embarcacion.propietario" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Pescador Asignado</label>
+                    <div class="input-group">
+                        <input type="text" id="pescadorSearch" class="form-control" 
+                               placeholder="Buscar pescador por nombre o identificación..." autocomplete="off" />
+                        <button type="button" class="btn btn-outline-secondary" id="clearPescador">
+                            <i class="bi bi-x-lg"></i> Limpiar
+                        </button>
+                    </div>
+                    <div id="pescadorResults" class="list-group mt-2" style="max-height: 300px; overflow-y: auto; display: none;"></div>
+                    <div id="selectedPescador" class="mt-2"></div>
+                    <input type="hidden" asp-for="Embarcacion.pescadorId" id="pescadorId" />
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input asp-for="Embarcacion.activo" class="form-check-input" type="checkbox" checked />
+                    <label asp-for="Embarcacion.activo" class="form-check-label">Activo</label>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                    <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script nonce="@@Context.Items["csp-nonce"]">
+    const pescadores = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Pescadores));
+    const searchInput = document.getElementById('pescadorSearch');
+    const resultsDiv = document.getElementById('pescadorResults');
+    const selectedDiv = document.getElementById('selectedPescador');
+    const pescadorIdInput = document.getElementById('pescadorId');
+    const clearBtn = document.getElementById('clearPescador');
+    
+    function buscarPescadores(query) {
+        if (!query || query.length < 2) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+        
+        const filtered = pescadores.filter(p => 
+            p.nombre.toLowerCase().includes(query.toLowerCase()) ||
+            p.identificacion.toLowerCase().includes(query.toLowerCase())
+        ).slice(0, 10);
+        
+        if (filtered.length === 0) {
+            resultsDiv.innerHTML = '<div class="list-group-item">No se encontraron pescadores</div>';
+            resultsDiv.style.display = 'block';
+            return;
+        }
+        
+        resultsDiv.innerHTML = filtered.map(p => `
+            <a href="#" class="list-group-item list-group-item-action" data-id="${p.id}" data-nombre="${p.nombre}">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">${p.nombre}</h6>
+                    <small class="text-muted">${p.identificacion}</small>
+                </div>
+                <small>${p.activo ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-secondary">Inactivo</span>'}</small>
+            </a>
+        `).join('');
+        resultsDiv.style.display = 'block';
+    }
+    
+    searchInput.addEventListener('input', (e) => buscarPescadores(e.target.value));
+    
+    resultsDiv.addEventListener('click', (e) => {
+        e.preventDefault();
+        const item = e.target.closest('[data-id]');
+        if (item) {
+            const id = item.getAttribute('data-id');
+            const nombre = item.getAttribute('data-nombre');
+            pescadorIdInput.value = id;
+            selectedDiv.innerHTML = `<div class="alert alert-info">Pescador seleccionado: <strong>${nombre}</strong></div>`;
+            searchInput.value = '';
+            resultsDiv.style.display = 'none';
+        }
+    });
+    
+    clearBtn.addEventListener('click', () => {
+        pescadorIdInput.value = '';
+        selectedDiv.innerHTML = '';
+        searchInput.value = '';
+        resultsDiv.style.display = 'none';
+    });
+    
+    // Cerrar resultados al hacer clic fuera
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
+            resultsDiv.style.display = 'none';
+        }
+    });
+</script>
+
+@section Scripts {
+    <partial name="../Shared/_ValidationScriptsPartial" />
+}

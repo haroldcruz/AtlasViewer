@@ -58,6 +58,7 @@
 				@if (User.IsInRole("Administrador") || User.IsInRole("Editor"))
 				{
 					<a class="nav-link" asp-page="/Pescadores/Index">Pescadores</a>
+					<a class="nav-link" asp-page="/Embarcaciones/Index">Embarcaciones</a>
 				}
  @if (User.IsInRole("Administrador"))
  {
@@ -100,6 +101,7 @@
 				@if (User.IsInRole("Administrador") || User.IsInRole("Editor"))
 				{
 					<a class="nav-link" asp-page="/Pescadores/Index">Pescadores</a>
+					<a class="nav-link" asp-page="/Embarcaciones/Index">Embarcaciones</a>
 				}
  @if (User.IsInRole("Administrador"))
  {

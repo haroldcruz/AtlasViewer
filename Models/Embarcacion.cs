@@ -16,8 +16,6 @@ public class Embarcacion
  [Required, StringLength(50)]
  public string matricula { get; set; } = string.Empty;
 
- [StringLength(200)]
- public string propietario { get; set; } = string.Empty;
-
- public bool activo { get; set; } = true;
-}
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string? pescadorId { get; set; }
+    
