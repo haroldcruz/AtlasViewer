@@ -11,7 +11,7 @@
  <header>
  <nav class="navbar navbar-expand-lg navbar-dark" aria-label="Barra superior">
  <div class="container-fluid align-items-center">
- <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav" aria-controls="offcanvasNav" aria-label="Abrir menú">
+ <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav" aria-controls="offcanvasNav" aria-label="Abrir menÃº">
  <span class="navbar-toggler-icon"></span>
  </button>
  <div class="collapse navbar-collapse justify-content-end">
@@ -21,13 +21,13 @@
  <li class="nav-item me-2"><span class="nav-link p-0">@User.Identity!.Name</span></li>
  <li class="nav-item">
  <form method="post" asp-page="/Logout" class="d-inline">
- <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesión</button>
+ <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesiÃ³n</button>
  </form>
  </li>
  }
  else
  {
- <li class="nav-item"><a class="btn btn-primary btn-sm" asp-page="/Login">Iniciar sesión</a></li>
+ <li class="nav-item"><a class="btn btn-primary btn-sm" asp-page="/Login">Iniciar sesiÃ³n</a></li>
  }
  </ul>
  </div>
@@ -37,7 +37,7 @@
 
  <div class="offcanvas offcanvas-start bg-dark text-light" tabindex="-1" id="offcanvasNav" aria-labelledby="offcanvasNavLabel">
  <div class="offcanvas-header">
- <h5 class="offcanvas-title" id="offcanvasNavLabel">Menú</h5>
+ <h5 class="offcanvas-title" id="offcanvasNavLabel">MenÃº</h5>
  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
  </div>
  <div class="offcanvas-body">
@@ -48,7 +48,7 @@
  <div class="text-muted small">Rol: @(User.IsInRole("Administrador") ? "Administrador" : "Usuario")</div>
  </div>
  <form method="post" asp-page="/Logout" class="mb-3">
- <button type="submit" class="btn btn-outline-light w-100">Cerrar sesión</button>
+ <button type="submit" class="btn btn-outline-light w-100">Cerrar sesiÃ³n</button>
  </form>
  }
  <nav class="nav flex-column">
@@ -57,11 +57,11 @@
  <a class="nav-link" asp-page="/Usuarios/Index">Usuarios</a>
  @if (User.IsInRole("Administrador"))
  {
- <a class="nav-link" asp-page="/Admin/Index">Panel Administración</a>
+ <a class="nav-link" asp-page="/Admin/Index">Panel AdministraciÃ³n</a>
  <a class="nav-link" asp-page="/Roles/Index">Roles</a>
  <a class="nav-link" asp-page="/Tools/Seed">Seed (Dev)</a>
  }
- <a class="nav-link" asp-page="/Account/ChangePassword">Cambiar contraseña</a>
+ <a class="nav-link" asp-page="/Account/ChangePassword">Cambiar contraseÃ±a</a>
  <a class="nav-link" asp-page="/Account/Profile">Mi perfil</a>
  }
  else
@@ -76,7 +76,7 @@
  <aside class="sidebar d-none d-lg-block" aria-label="Barra lateral">
  <div class="brand">
  <span class="logo" aria-hidden="true"></span>
- <strong>Menú</strong>
+ <strong>MenÃº</strong>
  </div>
  <div class="userbox">
  @if (User?.Identity?.IsAuthenticated ?? false)
@@ -86,7 +86,7 @@
  }
  else
  {
- <div class="small">No ha iniciado sesión</div>
+ <div class="small">No ha iniciado sesiÃ³n</div>
  }
  </div>
  <nav class="nav flex-column p-2">
@@ -95,11 +95,11 @@
  <a class="nav-link" asp-page="/Usuarios/Index">Usuarios</a>
  @if (User.IsInRole("Administrador"))
  {
- <a class="nav-link" asp-page="/Admin/Index">Panel Administración</a>
+ <a class="nav-link" asp-page="/Admin/Index">Panel AdministraciÃ³n</a>
  <a class="nav-link" asp-page="/Roles/Index">Roles</a>
  <a class="nav-link" asp-page="/Tools/Seed">Seed (Dev)</a>
  }
- <a class="nav-link" asp-page="/Account/ChangePassword">Cambiar contraseña</a>
+ <a class="nav-link" asp-page="/Account/ChangePassword">Cambiar contraseÃ±a</a>
  <a class="nav-link" asp-page="/Account/Profile">Mi perfil</a>
  }
  else

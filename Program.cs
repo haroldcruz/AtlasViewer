@@ -7,6 +7,11 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configurar encoding UTF-8 y cultura española
+System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("es-ES");
+CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("es-ES");
+
 // Registrar servicios en DI
 builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection("Mongo"));
 builder.Services.AddSingleton<IUsuarioService, UsuarioService>();
@@ -17,6 +22,10 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(options =>
 {
  options.Conventions.AuthorizeFolder("/Admin", "AdminOnly");
+})
+.AddViewOptions(options =>
+{
+ options.HtmlHelperOptions.ClientValidationEnabled = true;
 });
 
 // Mongo client
@@ -86,7 +95,7 @@ app.Use(async (context, next) =>
  }
 });
 
-// Endpoint diagn�stico de cultura
+// Endpoint diagnóstico de cultura
 app.MapGet("/diag/culture", () =>
 {
  var current = CultureInfo.CurrentCulture.Name;

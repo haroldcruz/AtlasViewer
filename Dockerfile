@@ -26,7 +26,9 @@ RUN apt-get update && apt-get install -y locales && \
  rm -rf /var/lib/apt/lists/*
 ENV LANG=es_ES.UTF-8 \
  LC_ALL=es_ES.UTF-8 \
- LANGUAGE=es_ES:en
+ LANGUAGE=es_ES:en \
+ LC_CTYPE=es_ES.UTF-8 \
+ DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 # copy published output
 COPY --from=build /app/publish .
