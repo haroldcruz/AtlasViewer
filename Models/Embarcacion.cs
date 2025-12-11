@@ -18,4 +18,9 @@ public class Embarcacion
 
     [BsonRepresentation(BsonType.ObjectId)]
     public string? pescadorId { get; set; }
-    
+
+    [StringLength(200)]
+    public string propietario { get; set; } = string.Empty;
+
+    public bool activo { get; set; } = true;
+}
