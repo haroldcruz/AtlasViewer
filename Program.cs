@@ -3,12 +3,22 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using MongoDB.Driver;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.AspNetCore.HttpOverrides;
 using System.Globalization;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
     Args = args,
     ContentRootPath = Directory.GetCurrentDirectory()
+});
+
+// Configurar ForwardedHeaders para proxies inversos (Render, Nginx, etc.)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
 });
 
 // Deshabilitar file watchers en producción (previene error inotify en Linux)
@@ -26,9 +36,11 @@ CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("es-ES");
 // Configurar cookies globales
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {
- options.MinimumSameSitePolicy = SameSiteMode.Strict;
+ options.MinimumSameSitePolicy = SameSiteMode.Lax; // Cambiado de Strict a Lax para compatibilidad
  options.HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always;
- options.Secure = CookieSecurePolicy.Always;
+ options.Secure = builder.Environment.IsDevelopment() 
+     ? CookieSecurePolicy.None 
+     : CookieSecurePolicy.Always;
 });
 
 // Registrar servicios en DI
@@ -93,9 +105,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
  {
  options.LoginPath = "/Login";
  options.AccessDeniedPath = "/AccessDenied";
- options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+ options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
+     ? CookieSecurePolicy.None 
+     : CookieSecurePolicy.Always;
  options.Cookie.HttpOnly = true;
- options.Cookie.SameSite = SameSiteMode.Strict;
+ options.Cookie.SameSite = SameSiteMode.Lax; // Cambiado de Strict a Lax
  });
 
 builder.Services.AddAuthorization(options =>
@@ -113,6 +127,9 @@ builder.Services.AddHsts(options =>
 });
 
 var app = builder.Build();
+
+// IMPORTANTE: UseForwardedHeaders debe ser el primer middleware
+app.UseForwardedHeaders();
 
 // Middleware de cabeceras de seguridad
 app.Use(async (context, next) =>
@@ -193,7 +210,13 @@ if (!app.Environment.IsDevelopment())
  app.UseExceptionHandler("/Home/Error");
  app.UseHsts();
 }
-app.UseHttpsRedirection();
+
+// Solo redirigir a HTTPS en desarrollo (en producción Render maneja HTTPS)
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseCookiePolicy();
 
 // Force UTF-8 for static files (e.g., any HTML under wwwroot if present)
