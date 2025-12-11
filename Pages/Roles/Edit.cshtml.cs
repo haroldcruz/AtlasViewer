@@ -8,7 +8,8 @@ namespace AtlasViewer.Pages.Roles
  public class EditModel : PageModel
  {
  private readonly IRolService _roles;
- public EditModel(IRolService roles) { _roles = roles; }
+ private readonly IUsuarioService _usuarios;
+ public EditModel(IRolService roles, IUsuarioService usuarios) { _roles = roles; _usuarios = usuarios; }
  [BindProperty] public Rol Rol { get; set; } = new Rol();
  public async Task<IActionResult> OnGetAsync(string id)
  {
@@ -19,7 +20,7 @@ namespace AtlasViewer.Pages.Roles
  public async Task<IActionResult> OnPostAsync()
  {
  if (!ModelState.IsValid) return Page();
- await _roles.UpdateAsync(Rol);
+ await _roles.UpdateAsync(Rol, _usuarios);
  TempData["PopoutTitle"] = "Rol actualizado";
  TempData["PopoutMessage"] = Rol.nombre_rol;
  TempData["PopoutIcon"] = "success";

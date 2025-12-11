@@ -30,6 +30,15 @@ public class EditModel : PageModel
  RolesSelect = roles.Select(r => new SelectListItem { Text = r.nombre_rol, Value = r.id_rol.ToString(), Selected = r.id_rol == Usuario.rol }).ToList();
  return Page();
  }
+ 
+ // Obtener el usuario actual de la BD para preservar hash y mustChangePassword
+ var usuarioActual = await _usuarios.GetByIdAsync(Usuario.Id!);
+ if (usuarioActual != null)
+ {
+ Usuario.hash = usuarioActual.hash;
+ Usuario.mustChangePassword = usuarioActual.mustChangePassword;
+ }
+ 
  await _usuarios.UpdateAsync(Usuario);
  TempData["PopoutTitle"] = "Usuario actualizado";
  TempData["PopoutMessage"] = Usuario.nombre ?? string.Empty;

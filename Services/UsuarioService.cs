@@ -23,6 +23,8 @@ public interface IUsuarioService
  Task<Usuario> CreateAsync(Usuario nuevo, CancellationToken cancellationToken = default);
  Task UpdateAsync(Usuario usuario, CancellationToken cancellationToken = default);
  Task DeleteAsync(string id, CancellationToken cancellationToken = default);
+ Task<long> CountByRolAsync(int rol, CancellationToken cancellationToken = default);
+ Task UpdateRolEnCascadaAsync(int rolAnterior, int rolNuevo, CancellationToken cancellationToken = default);
 }
 
 public class UsuarioService : IUsuarioService
@@ -46,7 +48,7 @@ public class UsuarioService : IUsuarioService
  settings.ServerSelectionTimeout = TimeSpan.FromSeconds(120);
  settings.ConnectTimeout = TimeSpan.FromSeconds(60);
  settings.SocketTimeout = TimeSpan.FromSeconds(120);
- settings.LocalThreshold = TimeSpan.FromMilliseconds(50); // amplía el umbral de latencia
+ settings.LocalThreshold = TimeSpan.FromMilliseconds(50); // amplï¿½a el umbral de latencia
  settings.RetryWrites = true;
  settings.RetryReads = true;
  settings.ApplicationName = "AtlasViewer";
@@ -78,12 +80,12 @@ public class UsuarioService : IUsuarioService
  }
  catch (OperationCanceledException)
  {
- // Ping cancelado por timeout breve: ignorar y permitir que la operación principal lo intente
+ // Ping cancelado por timeout breve: ignorar y permitir que la operaciï¿½n principal lo intente
  return false;
  }
  catch (MongoException)
  {
- // Problemas de red/cluster: ignorar aquí, la operación principal podrá reflejar el error
+ // Problemas de red/cluster: ignorar aquï¿½, la operaciï¿½n principal podrï¿½ reflejar el error
  return false;
  }
  }
@@ -145,5 +147,19 @@ public class UsuarioService : IUsuarioService
  {
  _ = TryPingAsync(cancellationToken);
  await _collection.DeleteOneAsync(u => u.Id == id, cancellationToken);
+ }
+
+ public async Task<long> CountByRolAsync(int rol, CancellationToken cancellationToken = default)
+ {
+ _ = TryPingAsync(cancellationToken);
+ return await _collection.CountDocumentsAsync(u => u.rol == rol, cancellationToken: cancellationToken);
+ }
+
+ public async Task UpdateRolEnCascadaAsync(int rolAnterior, int rolNuevo, CancellationToken cancellationToken = default)
+ {
+ _ = TryPingAsync(cancellationToken);
+ var filter = Builders<Usuario>.Filter.Eq(u => u.rol, rolAnterior);
+ var update = Builders<Usuario>.Update.Set(u => u.rol, rolNuevo);
+ await _collection.UpdateManyAsync(filter, update, cancellationToken: cancellationToken);
  }
 }
