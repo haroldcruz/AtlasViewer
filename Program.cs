@@ -21,7 +21,19 @@ builder.Services.AddSingleton<IRolService, RolService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(options =>
 {
+ // Requiere autenticación para todo
+ options.Conventions.AuthorizeFolder("/");
+ 
+ // Solo administradores pueden acceder a estas secciones
  options.Conventions.AuthorizeFolder("/Admin", "AdminOnly");
+ options.Conventions.AuthorizeFolder("/Usuarios", "AdminOnly");
+ options.Conventions.AuthorizeFolder("/Roles", "AdminOnly");
+ options.Conventions.AuthorizeFolder("/Tools", "AdminOnly");
+ 
+ // Permitir acceso sin autenticación a Login y Logout
+ options.Conventions.AllowAnonymousToPage("/Login");
+ options.Conventions.AllowAnonymousToPage("/Logout");
+ options.Conventions.AllowAnonymousToPage("/Index");
 })
 .AddViewOptions(options =>
 {
