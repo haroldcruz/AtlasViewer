@@ -55,6 +55,10 @@
  @if (User?.Identity?.IsAuthenticated ?? false)
  {
  <a class="nav-link" asp-page="/Usuarios/Index">Usuarios</a>
+				@if (User.IsInRole("Administrador") || User.IsInRole("Editor"))
+				{
+					<a class="nav-link" asp-page="/Pescadores/Index">Pescadores</a>
+				}
  @if (User.IsInRole("Administrador"))
  {
  <a class="nav-link" asp-page="/Admin/Index">Panel Administración</a>
@@ -93,6 +97,10 @@
  @if (User?.Identity?.IsAuthenticated ?? false)
  {
  <a class="nav-link" asp-page="/Usuarios/Index">Usuarios</a>
+				@if (User.IsInRole("Administrador") || User.IsInRole("Editor"))
+				{
+					<a class="nav-link" asp-page="/Pescadores/Index">Pescadores</a>
+				}
  @if (User.IsInRole("Administrador"))
  {
  <a class="nav-link" asp-page="/Admin/Index">Panel Administración</a>
