@@ -12,6 +12,14 @@ System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Inst
 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("es-ES");
 CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("es-ES");
 
+// Configurar cookies globales
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+ options.MinimumSameSitePolicy = SameSiteMode.Strict;
+ options.HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always;
+ options.Secure = CookieSecurePolicy.Always;
+});
+
 // Registrar servicios en DI
 builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection("Mongo"));
 builder.Services.AddSingleton<IUsuarioService, UsuarioService>();
@@ -61,6 +69,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
  {
  options.LoginPath = "/Login";
  options.AccessDeniedPath = "/AccessDenied";
+ options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+ options.Cookie.HttpOnly = true;
+ options.Cookie.SameSite = SameSiteMode.Strict;
  });
 
 builder.Services.AddAuthorization(options =>
@@ -90,7 +101,7 @@ app.Use(async (context, next) =>
  
  // CSP - Content Security Policy con nonce
  context.Response.Headers.Append("Content-Security-Policy", 
- $"default-src 'self'; " +
+ $"default-src 'none'; " +
  $"script-src 'self' 'nonce-{nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
  $"style-src 'self' 'nonce-{nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
  $"img-src 'self' data: https:; " +
@@ -98,7 +109,9 @@ app.Use(async (context, next) =>
  $"connect-src 'self'; " +
  $"frame-ancestors 'self'; " +
  $"base-uri 'self'; " +
- $"form-action 'self'");
+ $"form-action 'self'; " +
+ $"object-src 'none'; " +
+ $"manifest-src 'self'");
  
  // X-Frame-Options - Previene clickjacking
  context.Response.Headers.Append("X-Frame-Options", "SAMEORIGIN");
@@ -138,6 +151,7 @@ if (!app.Environment.IsDevelopment())
  app.UseHsts();
 }
 app.UseHttpsRedirection();
+app.UseCookiePolicy();
 
 // Force UTF-8 for static files (e.g., any HTML under wwwroot if present)
 var provider = new FileExtensionContentTypeProvider();
