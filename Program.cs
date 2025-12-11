@@ -5,7 +5,18 @@ using MongoDB.Driver;
 using Microsoft.AspNetCore.StaticFiles;
 using System.Globalization;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    ContentRootPath = Directory.GetCurrentDirectory()
+});
+
+// Deshabilitar file watchers en producción (previene error inotify en Linux)
+builder.Configuration.Sources.Clear();
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: false)
+    .AddEnvironmentVariables();
 
 // Configurar encoding UTF-8 y cultura española
 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
