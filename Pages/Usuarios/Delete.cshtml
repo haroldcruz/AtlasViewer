@@ -6,9 +6,14 @@
 }
 
 <h2 class="usuarios-title">Eliminar Usuario</h2>
-<p>¿Seguro que deseas eliminar este usuario?</p>
+<div class="alert alert-warning">
+ <p><strong>¿Seguro que deseas eliminar este usuario?</strong></p>
+ <p>Nombre: <strong>@Model.Nombre</strong></p>
+ <p>Email: <strong>@Model.Email</strong></p>
+</div>
 
 <form method="post">
+ <input type="hidden" name="id" value="@Model.Id" />
  <div class="form-actions">
  <button type="submit" class="btn btn-danger">Eliminar</button>
  <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
