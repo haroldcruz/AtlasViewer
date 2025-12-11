@@ -57,6 +57,9 @@ builder.Services.AddRazorPages(options =>
  options.Conventions.AuthorizeFolder("/Roles", "AdminOnly");
  options.Conventions.AuthorizeFolder("/Tools", "AdminOnly");
  
+ // Editor y Administrador pueden acceder a gestión de datos
+ options.Conventions.AuthorizeFolder("/Pescadores", "EditorOrAdmin");
+ 
  // Permitir acceso sin autenticación a Login y Logout
  options.Conventions.AllowAnonymousToPage("/Login");
  options.Conventions.AllowAnonymousToPage("/Logout");
@@ -96,6 +99,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization(options =>
 {
  options.AddPolicy("AdminOnly", policy => policy.RequireRole("Administrador"));
+ options.AddPolicy("EditorOrAdmin", policy => policy.RequireRole("Administrador", "Editor"));
 });
 
 // Configurar HSTS

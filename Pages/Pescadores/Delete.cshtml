@@ -1,0 +1,54 @@
+@page
+@model AtlasViewer.Pages.Pescadores.DeleteModel
+@{
+    ViewData["Title"] = "Eliminar Pescador";
+    Layout = "../Shared/_Layout";
+}
+<section class="container delete-pescador-page" aria-labelledby="delete-title">
+    <h1 id="delete-title" class="h4 text-danger">Eliminar Pescador</h1>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="alert alert-warning" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <strong>¿Está seguro que desea eliminar este pescador?</strong>
+                <p class="mb-0 mt-2">Esta acción no se puede deshacer.</p>
+            </div>
+            
+            <div class="card bg-dark text-light">
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Nombre:</dt>
+                        <dd class="col-sm-8">@Model.Pescador.nombre</dd>
+                        
+                        <dt class="col-sm-4">Identificación:</dt>
+                        <dd class="col-sm-8">@Model.Pescador.identificacion</dd>
+                        
+                        <dt class="col-sm-4">Embarcaciones:</dt>
+                        <dd class="col-sm-8">@Model.Pescador.embarcaciones.Count</dd>
+                        
+                        <dt class="col-sm-4">Estado:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.Pescador.activo)
+                            {
+                                <span class="badge bg-success">Activo</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactivo</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+            
+            <form method="post" class="mt-3">
+                <input type="hidden" asp-for="Pescador.Id" />
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">Confirmar Eliminación</button>
+                    <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

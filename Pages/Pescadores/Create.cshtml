@@ -1,0 +1,62 @@
+@page
+@model AtlasViewer.Pages.Pescadores.CreateModel
+@{
+    ViewData["Title"] = "Nuevo Pescador";
+    Layout = "../Shared/_Layout";
+}
+<section class="container create-pescador-page" aria-labelledby="create-title">
+    <h1 id="create-title" class="h4">Crear Nuevo Pescador</h1>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form method="post" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                
+                <div class="mb-3">
+                    <label asp-for="Pescador.nombre" class="form-label">Nombre Completo</label>
+                    <input asp-for="Pescador.nombre" class="form-control" required maxlength="200" />
+                    <span asp-validation-for="Pescador.nombre" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label asp-for="Pescador.identificacion" class="form-label">Identificación</label>
+                    <input asp-for="Pescador.identificacion" class="form-control" required maxlength="50" />
+                    <span asp-validation-for="Pescador.identificacion" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Embarcaciones (opcional)</label>
+                    <textarea id="embarcacionesText" class="form-control" rows="3" 
+                              placeholder="Ingrese las embarcaciones separadas por comas"></textarea>
+                    <small class="form-text text-muted">Ejemplo: Embarcación 1, Embarcación 2</small>
+                </div>
+                
+                <input type="hidden" asp-for="EmbarcacionesJson" id="embarcacionesJson" />
+                
+                <div class="mb-3 form-check">
+                    <input asp-for="Pescador.activo" class="form-check-input" type="checkbox" checked />
+                    <label asp-for="Pescador.activo" class="form-check-label">Activo</label>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                    <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script nonce="@Context.Items["csp-nonce"]">
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const embarcacionesText = document.getElementById('embarcacionesText').value;
+        const embarcaciones = embarcacionesText.split(',')
+            .map(e => e.trim())
+            .filter(e => e.length > 0);
+        document.getElementById('embarcacionesJson').value = JSON.stringify(embarcaciones);
+    });
+</script>
+
+@section Scripts {
+    <partial name="../Shared/_ValidationScriptsPartial" />
+}
