@@ -74,6 +74,11 @@ builder.Services.AddRazorPages(options =>
  // Requiere autenticación para todo
  options.Conventions.AuthorizeFolder("/");
  
+ // Permitir acceso anónimo a páginas públicas (crítico para evitar bucles)
+ options.Conventions.AllowAnonymousToPage("/Login");
+ options.Conventions.AllowAnonymousToPage("/Logout");
+ options.Conventions.AllowAnonymousToPage("/Index");
+ 
  // Solo administradores pueden acceder a estas secciones
  options.Conventions.AuthorizeFolder("/Admin", "AdminOnly");
  options.Conventions.AuthorizeFolder("/Usuarios", "AdminOnly");
