@@ -36,6 +36,12 @@ public class CreateModel : PageModel
 
         try
         {
+            // Normalizar pescadorId antes de crear
+            if (string.IsNullOrWhiteSpace(Embarcacion.pescadorId) || Embarcacion.pescadorId == "undefined")
+            {
+                Embarcacion.pescadorId = null;
+            }
+            
             await _embarcacionService.CreateAsync(Embarcacion);
             
             TempData["SuccessMessage"] = "Embarcación creada exitosamente";

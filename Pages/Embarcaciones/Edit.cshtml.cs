@@ -49,6 +49,12 @@ public class EditModel : PageModel
 
         try
         {
+            // Normalizar pescadorId antes de actualizar
+            if (string.IsNullOrWhiteSpace(Embarcacion.pescadorId) || Embarcacion.pescadorId == "undefined")
+            {
+                Embarcacion.pescadorId = null;
+            }
+            
             await _embarcacionService.UpdateAsync(Embarcacion.Id!, Embarcacion);
             
             TempData["SuccessMessage"] = "Embarcación actualizada exitosamente";

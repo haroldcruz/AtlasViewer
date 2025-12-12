@@ -37,7 +37,7 @@
                     </div>
                     <div id="pescadorResults" class="list-group mt-2 pescador-results-dropdown"></div>
                     <div id="selectedPescador" class="mt-2"></div>
-                    <input type="hidden" asp-for="Embarcacion.pescadorId" id="pescadorId" />
+                    <input type="hidden" asp-for="Embarcacion.pescadorId" id="pescadorId" value="@(Model.Embarcacion.pescadorId ?? "")" />
                 </div>
                 
                 <div class="mb-3 form-check">
