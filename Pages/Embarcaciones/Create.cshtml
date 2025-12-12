@@ -13,14 +13,14 @@
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
                 
                 <div class="mb-3">
-                    <label asp-for="Embarcacion.nombre" class="form-label">Nombre de la Embarcación</label>
+                    <label asp-for="Embarcacion.nombre" class="form-label">Nombre de la Embarcación <span class="text-danger">*</span></label>
                     <input asp-for="Embarcacion.nombre" class="form-control" required maxlength="200" />
                     <span asp-validation-for="Embarcacion.nombre" class="text-danger"></span>
                 </div>
                 
                 <div class="mb-3">
                     <label asp-for="Embarcacion.matricula" class="form-label">Matrícula</label>
-                    <input asp-for="Embarcacion.matricula" class="form-control" required maxlength="50" />
+                    <input asp-for="Embarcacion.matricula" class="form-control" maxlength="50" />
                     <span asp-validation-for="Embarcacion.matricula" class="text-danger"></span>
                 </div>
                 
@@ -36,6 +36,7 @@
                     <div id="pescadorResults" class="list-group mt-2 pescador-results-dropdown"></div>
                     <div id="selectedPescador" class="mt-2"></div>
                     <input type="hidden" asp-for="Embarcacion.pescadorId" id="pescadorId" value="" />
+                    <span asp-validation-for="Embarcacion.pescadorId" class="text-danger"></span>
                 </div>
                 
                 <div class="mb-3 form-check">

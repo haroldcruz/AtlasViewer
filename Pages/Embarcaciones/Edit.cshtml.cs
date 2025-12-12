@@ -41,6 +41,18 @@ public class EditModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
+        // Normalizar pescadorId antes de validar
+        if (string.IsNullOrWhiteSpace(Embarcacion.pescadorId) || Embarcacion.pescadorId == "undefined")
+        {
+            Embarcacion.pescadorId = null;
+        }
+        
+        // Validar que pescadorId no sea nulo
+        if (string.IsNullOrEmpty(Embarcacion.pescadorId))
+        {
+            ModelState.AddModelError("Embarcacion.pescadorId", "Debe seleccionar un pescador (propietario).");
+        }
+        
         if (!ModelState.IsValid)
         {
             Pescadores = await _pescadorService.GetAllAsync();
@@ -49,12 +61,6 @@ public class EditModel : PageModel
 
         try
         {
-            // Normalizar pescadorId antes de actualizar
-            if (string.IsNullOrWhiteSpace(Embarcacion.pescadorId) || Embarcacion.pescadorId == "undefined")
-            {
-                Embarcacion.pescadorId = null;
-            }
-            
             await _embarcacionService.UpdateAsync(Embarcacion.Id!, Embarcacion);
             
             TempData["SuccessMessage"] = "Embarcación actualizada exitosamente";

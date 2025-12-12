@@ -13,9 +13,10 @@ public class Embarcacion
  [Required, StringLength(200)]
  public string nombre { get; set; } = string.Empty;
 
- [Required, StringLength(50)]
+ [StringLength(50)]
  public string matricula { get; set; } = string.Empty;
 
+    [Required]
     [BsonRepresentation(BsonType.ObjectId)]
     public string? pescadorId { get; set; }
 
