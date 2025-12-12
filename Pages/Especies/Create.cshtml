@@ -1,0 +1,68 @@
+@page
+@model AtlasViewer.Pages.Especies.CreateModel
+@{
+    ViewData["Title"] = "Nueva Especie";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h3 class="mb-0"><i class="bi bi-plus-circle"></i> Nueva Especie</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Especie.codigo" class="form-label">Código <span class="text-danger">*</span></label>
+                        <input asp-for="Especie.codigo" class="form-control" placeholder="Ej: ESP001" />
+                        <span asp-validation-for="Especie.codigo" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Especie.nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                        <input asp-for="Especie.nombre" class="form-control" placeholder="Nombre de la especie" />
+                        <span asp-validation-for="Especie.nombre" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Especie.tallaMinimaCm" class="form-label">Talla Mínima (cm)</label>
+                        <input asp-for="Especie.tallaMinimaCm" class="form-control" type="number" step="0.01" min="0" />
+                        <span asp-validation-for="Especie.tallaMinimaCm" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Especie.pesoMinimoKg" class="form-label">Peso Mínimo (kg)</label>
+                        <input asp-for="Especie.pesoMinimoKg" class="form-control" type="number" step="0.01" min="0" />
+                        <span asp-validation-for="Especie.pesoMinimoKg" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Especie.inventarioAcumuladoKg" class="form-label">Inventario Acumulado (kg)</label>
+                        <input asp-for="Especie.inventarioAcumuladoKg" class="form-control" type="number" step="0.01" min="0" value="0" />
+                        <span asp-validation-for="Especie.inventarioAcumuladoKg" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Especie.precioPromedioCompra" class="form-label">Precio Promedio de Compra</label>
+                        <input asp-for="Especie.precioPromedioCompra" class="form-control" type="number" step="0.01" min="0" value="0" />
+                        <span asp-validation-for="Especie.precioPromedioCompra" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Crear Especie
+                    </button>
+                    <a asp-page="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

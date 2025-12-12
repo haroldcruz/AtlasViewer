@@ -1,0 +1,52 @@
+@page
+@model AtlasViewer.Pages.Especies.DeleteModel
+@{
+    ViewData["Title"] = "Eliminar Especie";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm border-danger">
+        <div class="card-header bg-danger text-white">
+            <h3 class="mb-0"><i class="bi bi-trash"></i> Eliminar Especie</h3>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <strong>¿Está seguro de que desea eliminar esta especie?</strong>
+                <p class="mb-0 mt-2">Esta acción no se puede deshacer.</p>
+            </div>
+
+            <dl class="row">
+                <dt class="col-sm-3">Código:</dt>
+                <dd class="col-sm-9"><code>@Model.Especie.codigo</code></dd>
+
+                <dt class="col-sm-3">Nombre:</dt>
+                <dd class="col-sm-9"><strong>@Model.Especie.nombre</strong></dd>
+
+                <dt class="col-sm-3">Talla Mínima:</dt>
+                <dd class="col-sm-9">@Model.Especie.tallaMinimaCm.ToString("F2") cm</dd>
+
+                <dt class="col-sm-3">Peso Mínimo:</dt>
+                <dd class="col-sm-9">@Model.Especie.pesoMinimoKg.ToString("F2") kg</dd>
+
+                <dt class="col-sm-3">Inventario Acumulado:</dt>
+                <dd class="col-sm-9">@Model.Especie.inventarioAcumuladoKg.ToString("F2") kg</dd>
+
+                <dt class="col-sm-3">Precio Promedio:</dt>
+                <dd class="col-sm-9">@Model.Especie.precioPromedioCompra.ToString("C")</dd>
+            </dl>
+
+            <form method="post" class="mt-4">
+                <input type="hidden" asp-for="Especie.Id" />
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Confirmar Eliminación
+                    </button>
+                    <a asp-page="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

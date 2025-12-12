@@ -1,0 +1,43 @@
+@page
+@model AtlasViewer.Pages.Especies.DetailsModel
+@{
+    ViewData["Title"] = "Detalles de Especie";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h3 class="mb-0"><i class="bi bi-eye"></i> Detalles de Especie</h3>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Código:</dt>
+                <dd class="col-sm-9"><code>@Model.Especie.codigo</code></dd>
+
+                <dt class="col-sm-3">Nombre:</dt>
+                <dd class="col-sm-9"><strong>@Model.Especie.nombre</strong></dd>
+
+                <dt class="col-sm-3">Talla Mínima:</dt>
+                <dd class="col-sm-9">@Model.Especie.tallaMinimaCm.ToString("F2") cm</dd>
+
+                <dt class="col-sm-3">Peso Mínimo:</dt>
+                <dd class="col-sm-9">@Model.Especie.pesoMinimoKg.ToString("F2") kg</dd>
+
+                <dt class="col-sm-3">Inventario Acumulado:</dt>
+                <dd class="col-sm-9">@Model.Especie.inventarioAcumuladoKg.ToString("F2") kg</dd>
+
+                <dt class="col-sm-3">Precio Promedio de Compra:</dt>
+                <dd class="col-sm-9">@Model.Especie.precioPromedioCompra.ToString("C")</dd>
+            </dl>
+
+            <div class="d-flex gap-2 mt-4">
+                <a asp-page="Edit" asp-route-id="@Model.Especie.Id" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a asp-page="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al Listado
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

@@ -59,7 +59,7 @@
 				@if (User.IsInRole("Administrador") || User.IsInRole("Editor"))
 				{
 					<a class="nav-link" asp-page="/Pescadores/Index">Pescadores</a>
-					<a class="nav-link" asp-page="/Embarcaciones/Index">Embarcaciones</a>
+					<a class="nav-link" asp-page="/Embarcaciones/Index">Embarcaciones</a>`n`t`t`t`t`t<a class="nav-link" asp-page="/Especies/Index">Especies</a>
 				}
  @if (User.IsInRole("Administrador"))
  {
@@ -102,7 +102,7 @@
 				@if (User.IsInRole("Administrador") || User.IsInRole("Editor"))
 				{
 					<a class="nav-link" asp-page="/Pescadores/Index">Pescadores</a>
-					<a class="nav-link" asp-page="/Embarcaciones/Index">Embarcaciones</a>
+					<a class="nav-link" asp-page="/Embarcaciones/Index">Embarcaciones</a>`n`t`t`t`t`t<a class="nav-link" asp-page="/Especies/Index">Especies</a>
 				}
  @if (User.IsInRole("Administrador"))
  {
@@ -121,37 +121,41 @@
  </aside>
  <main class="content">
  <div class="container py-4">
- @if (TempData["SuccessMessage"] != null)
- {
- <div class="alert alert-success alert-dismissible fade show" role="alert">
- <i class="bi bi-check-circle-fill"></i>
- <strong>¡Éxito!</strong> @TempData["SuccessMessage"]
- <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
- </div>
- }
- @if (TempData["ErrorMessage"] != null)
- {
- <div class="alert alert-danger alert-dismissible fade show" role="alert">
- <i class="bi bi-exclamation-triangle-fill"></i>
- <strong>Error:</strong> @TempData["ErrorMessage"]
- <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
- </div>
- }
- @if (TempData["InfoMessage"] != null)
- {
- <div class="alert alert-info alert-dismissible fade show" role="alert">
- <i class="bi bi-info-circle-fill"></i>
- @TempData["InfoMessage"]
- <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
- </div>
- }
- @if (TempData["WarningMessage"] != null)
- {
- <div class="alert alert-warning alert-dismissible fade show" role="alert">
- <i class="bi bi-exclamation-circle-fill"></i>
- <strong>Advertencia:</strong> @TempData["WarningMessage"]
- <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
- </div>
+                    @{
+                        var successMsg = TempData["SuccessMessage"]?.ToString();
+                        var errorMsg = TempData["ErrorMessage"]?.ToString();
+                        var infoMsg = TempData["InfoMessage"]?.ToString();
+                        var warningMsg = TempData["WarningMessage"]?.ToString();
+                    }
+                    @if (!string.IsNullOrEmpty(successMsg))
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <strong>¡Éxito!</strong> @successMsg
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(errorMsg))
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <strong>Error:</strong> @errorMsg
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(infoMsg))
+                    {
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <i class="bi bi-info-circle-fill"></i>
+                            @infoMsg
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(warningMsg))
+                    {
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-circle-fill"></i>
+                            <strong>Advertencia:</strong> @warningMsg
  }
  @RenderBody()
  </div>

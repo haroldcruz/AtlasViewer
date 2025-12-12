@@ -1,0 +1,68 @@
+@page
+@model AtlasViewer.Pages.Especies.IndexModel
+@{
+    ViewData["Title"] = "Especies";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-fish"></i> Gestión de Especies</h3>
+            <a asp-page="Create" class="btn btn-light btn-sm">
+                <i class="bi bi-plus-circle"></i> Nueva Especie
+            </a>
+        </div>
+        <div class="card-body">
+            @if (Model.Especies == null || !Model.Especies.Any())
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No hay especies registradas.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Talla Mínima (cm)</th>
+                                <th>Peso Mínimo (kg)</th>
+                                <th>Inventario (kg)</th>
+                                <th>Precio Promedio</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var especie in Model.Especies)
+                            {
+                                <tr>
+                                    <td><code>@especie.codigo</code></td>
+                                    <td><strong>@especie.nombre</strong></td>
+                                    <td>@especie.tallaMinimaCm.ToString("F2")</td>
+                                    <td>@especie.pesoMinimoKg.ToString("F2")</td>
+                                    <td>@especie.inventarioAcumuladoKg.ToString("F2")</td>
+                                    <td>@especie.precioPromedioCompra.ToString("C")</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a asp-page="Details" asp-route-id="@especie.Id" class="btn btn-info" title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a asp-page="Edit" asp-route-id="@especie.Id" class="btn btn-warning" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-page="Delete" asp-route-id="@especie.Id" class="btn btn-danger" title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</section>
