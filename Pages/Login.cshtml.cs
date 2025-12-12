@@ -33,17 +33,23 @@ namespace AtlasViewer.Pages
         {
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
             {
- AlertService.Warning(TempData, "Ingrese usuario y contraseña.");
+                AlertService.Warning(TempData, "Ingrese usuario y contraseña.");
+                return Page();
+            }
 
             var usuario = await _usuarios.GetByNombreAsync(Username) ?? await _usuarios.GetByEmailAsync(Username);
             if (usuario is null)
             {
- AlertService.Error(TempData, "Usuario o contraseña inválidos.");
+                AlertService.Error(TempData, "Usuario o contraseña inválidos.");
+                return Page();
+            }
 
             var ok = await _usuarios.VerifyPasswordAsync(usuario, Password);
             if (!ok)
             {
- AlertService.Error(TempData, "Usuario o contraseña inválidos.");
+                AlertService.Error(TempData, "Usuario o contraseña inválidos.");
+                return Page();
+            }
 
             // Si debe cambiar contraseña, redirigir al cambio con claims mínimos
             if (usuario.mustChangePassword)
