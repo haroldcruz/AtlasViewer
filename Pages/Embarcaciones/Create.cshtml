@@ -60,6 +60,11 @@
     const pescadorIdInput = document.getElementById('pescadorId');
     const clearBtn = document.getElementById('clearPescador');
     
+    // Inicializar con cadena vacía para evitar 'undefined'
+    if (!pescadorIdInput.value) {
+        pescadorIdInput.value = '';
+    }
+    
     function buscarPescadores(query) {
         if (!query || query.trim().length === 0) {
             resultsDiv.classList.remove('show');

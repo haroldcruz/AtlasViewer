@@ -41,6 +41,12 @@ public class EmbarcacionService : IEmbarcacionService
 
     public async Task CreateAsync(Embarcacion embarcacion)
     {
+        // Convertir cadena vacía a null
+        if (string.IsNullOrWhiteSpace(embarcacion.pescadorId))
+        {
+            embarcacion.pescadorId = null;
+        }
+        
         await _embarcaciones.InsertOneAsync(embarcacion);
         
         // Actualizar lista de embarcaciones del pescador
@@ -53,6 +59,12 @@ public class EmbarcacionService : IEmbarcacionService
     public async Task UpdateAsync(string id, Embarcacion embarcacion)
     {
         var embarcacionAnterior = await GetByIdAsync(id);
+        
+        // Convertir cadena vacía a null
+        if (string.IsNullOrWhiteSpace(embarcacion.pescadorId))
+        {
+            embarcacion.pescadorId = null;
+        }
         
         await _embarcaciones.ReplaceOneAsync(e => e.Id == id, embarcacion);
         

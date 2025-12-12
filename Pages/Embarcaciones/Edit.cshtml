@@ -62,9 +62,14 @@
     const pescadorIdInput = document.getElementById('pescadorId');
     const clearBtn = document.getElementById('clearPescador');
     
+    // Inicializar con cadena vacía para evitar 'undefined'
+    if (!pescadorIdInput.value) {
+        pescadorIdInput.value = '';
+    }
+    
     // Mostrar pescador seleccionado actual
     const pescadorActualId = '@Model.Embarcacion.pescadorId';
-    if (pescadorActualId) {
+    if (pescadorActualId && pescadorActualId !== '') {
         const pescadorActual = pescadores.find(p => p.id === pescadorActualId);
         if (pescadorActual) {
             selectedDiv.innerHTML = `<div class="alert alert-info">Pescador seleccionado: <strong>${pescadorActual.nombre}</strong></div>`;
