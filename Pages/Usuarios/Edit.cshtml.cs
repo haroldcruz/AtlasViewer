@@ -40,9 +40,7 @@ public class EditModel : PageModel
  }
  
  await _usuarios.UpdateAsync(Usuario);
- TempData["PopoutTitle"] = "Usuario actualizado";
- TempData["PopoutMessage"] = Usuario.nombre ?? string.Empty;
- TempData["PopoutIcon"] = "success";
+ AlertService.Success(TempData, $"Usuario '{Usuario.nombre}' actualizado exitosamente.");
  return RedirectToPage("Index");
  }
 }

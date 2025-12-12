@@ -15,9 +15,7 @@ namespace AtlasViewer.Pages.Roles
  {
  if (!ModelState.IsValid) return Page();
  await _roles.CreateAsync(Rol);
- TempData["PopoutTitle"] = "Rol creado";
- TempData["PopoutMessage"] = Rol.nombre_rol;
- TempData["PopoutIcon"] = "success";
+ AlertService.Success(TempData, $"Rol '{Rol.nombre_rol}' creado exitosamente.");
  return RedirectToPage("Index");
  }
  }

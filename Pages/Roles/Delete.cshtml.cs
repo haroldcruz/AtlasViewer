@@ -22,14 +22,10 @@ namespace AtlasViewer.Pages.Roles
  var eliminado = await _roles.DeleteAsync(Rol.Id!, _usuarios);
  if (!eliminado)
  {
- TempData["PopoutTitle"] = "No se puede eliminar";
- TempData["PopoutMessage"] = "Este rol tiene usuarios asignados y no puede ser eliminado.";
- TempData["PopoutIcon"] = "error";
+ AlertService.Error(TempData, "No se puede eliminar este rol porque tiene usuarios asignados.");
  return RedirectToPage("Index");
  }
- TempData["PopoutTitle"] = "Rol eliminado";
- TempData["PopoutMessage"] = Rol.nombre_rol;
- TempData["PopoutIcon"] = "success";
+ AlertService.Success(TempData, $"Rol '{Rol.nombre_rol}' eliminado exitosamente.");
  return RedirectToPage("Index");
  }
  }

@@ -51,8 +51,7 @@ namespace AtlasViewer.Pages.Tools
  await _usuarios.UpdateAsync(u);
  ResultMessage = "Usuario actualizado con nuevo hash y rol Administrador.";
  }
- TempData["PopoutTitle"] = "Seed";
- TempData["PopoutMessage"] = $"Usuario {Nombre} listo para login";
+ AlertService.Success(TempData, $"Usuario '{Nombre}' listo para login.");
  return Page();
  }
  }

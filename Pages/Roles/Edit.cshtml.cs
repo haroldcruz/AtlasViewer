@@ -21,9 +21,7 @@ namespace AtlasViewer.Pages.Roles
  {
  if (!ModelState.IsValid) return Page();
  await _roles.UpdateAsync(Rol, _usuarios);
- TempData["PopoutTitle"] = "Rol actualizado";
- TempData["PopoutMessage"] = Rol.nombre_rol;
- TempData["PopoutIcon"] = "success";
+ AlertService.Success(TempData, $"Rol '{Rol.nombre_rol}' actualizado exitosamente.");
  return RedirectToPage("Index");
  }
  }

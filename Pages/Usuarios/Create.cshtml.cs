@@ -29,16 +29,14 @@ public class CreateModel : PageModel
  await OnGetAsync();
  return Page();
  }
- // Asignar contraseña temporal y generar hash
+ // Asignar contraseï¿½a temporal y generar hash
  var tempPassword = "abc123";
  var hash = BCrypt.Net.BCrypt.HashPassword(tempPassword);
  Usuario.hash = hash;
  Usuario.mustChangePassword = true; // obliga cambio al primer login
  // Guardar
  await _service.CreateAsync(Usuario);
- TempData["PopoutTitle"] = "Usuario creado";
- TempData["PopoutMessage"] = $"Se asignó una contraseña temporal. Debe cambiarse en el primer ingreso.";
- TempData["PopoutIcon"] = "success";
+ AlertService.Success(TempData, $"Usuario '{Usuario.nombre}' creado exitosamente. ContraseÃ±a temporal asignada (debe cambiarse en el primer ingreso).");
  return RedirectToPage("Index");
  }
 }

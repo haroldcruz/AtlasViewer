@@ -33,29 +33,17 @@ namespace AtlasViewer.Pages
         {
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
             {
-                TempData["PopoutTitle"] = "Inicio de sesión";
-                TempData["PopoutMessage"] = "Ingrese usuario y contraseña.";
-                TempData["PopoutIcon"] = "warning";
-                return Page();
-            }
+ AlertService.Warning(TempData, "Ingrese usuario y contraseña.");
 
             var usuario = await _usuarios.GetByNombreAsync(Username) ?? await _usuarios.GetByEmailAsync(Username);
             if (usuario is null)
             {
-                TempData["PopoutTitle"] = "Inicio de sesión";
-                TempData["PopoutMessage"] = "Usuario o contraseña inválidos.";
-                TempData["PopoutIcon"] = "error";
-                return Page();
-            }
+ AlertService.Error(TempData, "Usuario o contraseña inválidos.");
 
             var ok = await _usuarios.VerifyPasswordAsync(usuario, Password);
             if (!ok)
             {
-                TempData["PopoutTitle"] = "Inicio de sesión";
-                TempData["PopoutMessage"] = "Usuario o contraseña inválidos.";
-                TempData["PopoutIcon"] = "error";
-                return Page();
-            }
+ AlertService.Error(TempData, "Usuario o contraseña inválidos.");
 
             // Si debe cambiar contraseña, redirigir al cambio con claims mínimos
             if (usuario.mustChangePassword)
@@ -81,16 +69,12 @@ namespace AtlasViewer.Pages
 
             if (usuario.rol ==1)
             {
-                TempData["PopoutTitle"] = "Bienvenido";
-                TempData["PopoutMessage"] = usuario.nombre ?? Username!;
-                TempData["PopoutIcon"] = "success";
+                AlertService.Success(TempData, $"Bienvenido, {usuario.nombre ?? Username!}");
                 return LocalRedirect(Url.Content("/Admin/Index"));
             }
             else
             {
-                TempData["PopoutTitle"] = "Bienvenido";
-                TempData["PopoutMessage"] = usuario.nombre ?? Username!;
-                TempData["PopoutIcon"] = "success";
+                AlertService.Success(TempData, $"Bienvenido, {usuario.nombre ?? Username!}");
                 return LocalRedirect(Url.Content("/Account/Profile"));
             }
         }

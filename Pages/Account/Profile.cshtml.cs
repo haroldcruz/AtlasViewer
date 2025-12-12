@@ -26,9 +26,7 @@ namespace AtlasViewer.Pages.Account
  if (usuario is null) return Page();
  usuario.nombre = Nombre; usuario.email = Email;
  await _usuarios.UpdateAsync(usuario);
- TempData["PopoutTitle"] = "Perfil actualizado";
- TempData["PopoutMessage"] = "Sus datos han sido guardados";
- TempData["PopoutIcon"] = "success";
+ AlertService.Success(TempData, "Perfil actualizado exitosamente.");
  return RedirectToPage("/Usuarios/Index");
  }
  }

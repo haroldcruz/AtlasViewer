@@ -20,34 +20,26 @@ namespace AtlasViewer.Pages.Account
  {
  if (string.IsNullOrWhiteSpace(New) || New != Confirm)
  {
- TempData["PopoutTitle"] = "Cambiar contraseña";
- TempData["PopoutMessage"] = "Las contraseñas no coinciden.";
- TempData["PopoutIcon"] = "error";
+ AlertService.Error(TempData, "Las contraseÃ±as no coinciden.");
  return Page();
  }
  var name = User.Identity?.Name;
  var usuario = await _usuarios.GetByNombreAsync(name!) ?? await _usuarios.GetByEmailAsync(name!);
  if (usuario is null)
  {
- TempData["PopoutTitle"] = "Cambiar contraseña";
- TempData["PopoutMessage"] = "Usuario no encontrado.";
- TempData["PopoutIcon"] = "error";
+ AlertService.Error(TempData, "Usuario no encontrado.");
  return Page();
  }
  var ok = await _usuarios.VerifyPasswordAsync(usuario, Current);
  if (!ok)
  {
- TempData["PopoutTitle"] = "Cambiar contraseña";
- TempData["PopoutMessage"] = "Contraseña actual incorrecta.";
- TempData["PopoutIcon"] = "error";
+ AlertService.Error(TempData, "ContraseÃ±a actual incorrecta.");
  return Page();
  }
  usuario.hash = BCrypt.Net.BCrypt.HashPassword(New);
  usuario.mustChangePassword = false;
  await _usuarios.UpdateAsync(usuario);
- TempData["PopoutTitle"] = "Contraseña actualizada";
- TempData["PopoutMessage"] = "Ahora puede continuar";
- TempData["PopoutIcon"] = "success";
+ AlertService.Success(TempData, "ContraseÃ±a actualizada exitosamente.");
  return LocalRedirect(Url.Content("~/"));
  }
  }
