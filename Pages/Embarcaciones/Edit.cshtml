@@ -54,7 +54,7 @@
     </div>
 </section>
 
-<script nonce="@Context.Items["csp-nonce"]">
+<script nonce="@HttpContext.Items["csp-nonce"]">
     const pescadores = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Pescadores));
     const searchInput = document.getElementById('pescadorSearch');
     const resultsDiv = document.getElementById('pescadorResults');
