@@ -35,7 +35,7 @@
                             <i class="bi bi-x-lg"></i> Limpiar
                         </button>
                     </div>
-                    <div id="pescadorResults" class="list-group mt-2" style="max-height: 300px; overflow-y: auto; display: none;"></div>
+                    <div id="pescadorResults" class="list-group mt-2 pescador-results-dropdown"></div>
                     <div id="selectedPescador" class="mt-2"></div>
                     <input type="hidden" asp-for="Embarcacion.pescadorId" id="pescadorId" />
                 </div>
@@ -54,7 +54,7 @@
     </div>
 </section>
 
-<script>
+<script nonce="@Context.Items["csp-nonce"]">
     const pescadores = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Pescadores));
     const searchInput = document.getElementById('pescadorSearch');
     const resultsDiv = document.getElementById('pescadorResults');
@@ -73,7 +73,7 @@
     
     function buscarPescadores(query) {
         if (!query || query.trim().length === 0) {
-            resultsDiv.style.display = 'none';
+            resultsDiv.classList.remove('show');
             return;
         }
         
@@ -97,7 +97,7 @@
         
         if (filtered.length === 0) {
             resultsDiv.innerHTML = '<div class="list-group-item">No se encontraron pescadores</div>';
-            resultsDiv.style.display = 'block';
+            resultsDiv.classList.add('show');
             return;
         }
         
@@ -110,7 +110,7 @@
                 <small>${p.activo ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-secondary">Inactivo</span>'}</small>
             </a>
         `).join('');
-        resultsDiv.style.display = 'block';
+        resultsDiv.classList.add('show');
     }
     
     searchInput.addEventListener('input', (e) => buscarPescadores(e.target.value));
@@ -124,7 +124,7 @@
             pescadorIdInput.value = id;
             selectedDiv.innerHTML = `<div class="alert alert-info">Pescador seleccionado: <strong>${nombre}</strong></div>`;
             searchInput.value = '';
-            resultsDiv.style.display = 'none';
+            resultsDiv.classList.remove('show');
         }
     });
     
@@ -132,12 +132,12 @@
         pescadorIdInput.value = '';
         selectedDiv.innerHTML = '';
         searchInput.value = '';
-        resultsDiv.style.display = 'none';
+        resultsDiv.classList.remove('show');
     });
     
     document.addEventListener('click', (e) => {
         if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
-            resultsDiv.style.display = 'none';
+            resultsDiv.classList.remove('show');
         }
     });
 </script>

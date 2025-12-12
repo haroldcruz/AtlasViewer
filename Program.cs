@@ -165,10 +165,10 @@ app.Use(async (context, next) =>
  context.Response.Headers.Append("Content-Security-Policy", 
  $"default-src 'none'; " +
  $"script-src 'self' 'nonce-{nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
- $"style-src 'self' 'nonce-{nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+ $"style-src 'self' 'unsafe-hashes' 'nonce-{nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
  $"img-src 'self' data:; " +
  $"font-src 'self' data: https://cdn.jsdelivr.net; " +
- $"connect-src 'self'; " +
+ $"connect-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
  $"frame-ancestors 'self'; " +
  $"base-uri 'self'; " +
  $"form-action 'self'; " +

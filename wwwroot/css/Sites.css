@@ -77,3 +77,13 @@ html,body{min-height:100vh;background-color:var(--bg);color:var(--text);}
 /* Offcanvas */
 .offcanvas.bg-dark .offcanvas-title{color:#ffffff;} 
 .offcanvas.bg-dark .btn-close-white{filter:invert(1);} 
+/* Pescador results dropdown */
+.pescador-results-dropdown {
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+}
+
+.pescador-results-dropdown.show {
+    display: block;
+}
