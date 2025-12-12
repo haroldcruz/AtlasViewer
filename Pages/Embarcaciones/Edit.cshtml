@@ -27,16 +27,10 @@
                 </div>
                 
                 <div class="mb-3">
-                    <label asp-for="Embarcacion.propietario" class="form-label">Propietario</label>
-                    <input asp-for="Embarcacion.propietario" class="form-control" maxlength="200" />
-                    <span asp-validation-for="Embarcacion.propietario" class="text-danger"></span>
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">Pescador Asignado</label>
+                    <label class="form-label">Pescador (Propietario) <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <input type="text" id="pescadorSearch" class="form-control" 
-                               placeholder="Buscar pescador por nombre o identificación..." autocomplete="off" />
+                               placeholder="Escriba la identificación o nombre del pescador..." autocomplete="off" />
                         <button type="button" class="btn btn-outline-secondary" id="clearPescador">
                             <i class="bi bi-x-lg"></i> Limpiar
                         </button>
@@ -78,15 +72,28 @@
     }
     
     function buscarPescadores(query) {
-        if (!query || query.length < 2) {
+        if (!query || query.trim().length === 0) {
             resultsDiv.style.display = 'none';
             return;
         }
         
-        const filtered = pescadores.filter(p => 
-            p.nombre.toLowerCase().includes(query.toLowerCase()) ||
-            p.identificacion.toLowerCase().includes(query.toLowerCase())
-        ).slice(0, 10);
+        const queryLower = query.toLowerCase().trim();
+        
+        // Priorizar búsqueda por identificación
+        const filtered = pescadores
+            .filter(p => 
+                p.identificacion.toLowerCase().includes(queryLower) ||
+                p.nombre.toLowerCase().includes(queryLower)
+            )
+            .sort((a, b) => {
+                // Priorizar coincidencias exactas en identificación
+                const aIdMatch = a.identificacion.toLowerCase().startsWith(queryLower);
+                const bIdMatch = b.identificacion.toLowerCase().startsWith(queryLower);
+                if (aIdMatch && !bIdMatch) return -1;
+                if (!aIdMatch && bIdMatch) return 1;
+                return 0;
+            })
+            .slice(0, 10);
         
         if (filtered.length === 0) {
             resultsDiv.innerHTML = '<div class="list-group-item">No se encontraron pescadores</div>';

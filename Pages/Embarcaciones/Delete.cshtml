@@ -24,10 +24,7 @@
                         <dt class="col-sm-4">Matrícula:</dt>
                         <dd class="col-sm-8">@Model.Embarcacion.matricula</dd>
                         
-                        <dt class="col-sm-4">Propietario:</dt>
-                        <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Embarcacion.propietario) ? "-" : Model.Embarcacion.propietario)</dd>
-                        
-                        <dt class="col-sm-4">Pescador Asignado:</dt>
+                        <dt class="col-sm-4">Pescador (Propietario):</dt>
                         <dd class="col-sm-8">
                             @if (Model.Pescador != null)
                             {

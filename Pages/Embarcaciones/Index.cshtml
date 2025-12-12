@@ -22,8 +22,7 @@
                     <tr>
                         <th>Nombre</th>
                         <th>Matrícula</th>
-                        <th>Propietario</th>
-                        <th>Pescador Asignado</th>
+                        <th>Pescador (Propietario)</th>
                         <th>Estado</th>
                         <th class="text-end">Acciones</th>
                     </tr>
@@ -35,11 +34,13 @@
                         <tr>
                             <td>@e.nombre</td>
                             <td>@e.matricula</td>
-                            <td>@e.propietario</td>
                             <td>
                                 @if (pescador != null)
                                 {
-                                    <span class="badge bg-info">@pescador.nombre</span>
+                                    <div>
+                                        <strong>@pescador.nombre</strong><br/>
+                                        <small class="text-muted">ID: @pescador.identificacion</small>
+                                    </div>
                                 }
                                 else
                                 {
