@@ -71,7 +71,7 @@
     // Mostrar pescador seleccionado actual
     const pescadorActualId = '@Model.Embarcacion.pescadorId';
     if (pescadorActualId && pescadorActualId !== '') {
-        const pescadorActual = pescadores.find(p => p.id === pescadorActualId);
+        const pescadorActual = pescadores.find(p => p.Id === pescadorActualId);
         if (pescadorActual) {
             selectedDiv.innerHTML = `<div class="alert alert-info">Pescador seleccionado: <strong>${pescadorActual.nombre}</strong></div>`;
         }
@@ -108,7 +108,7 @@
         }
         
         resultsDiv.innerHTML = filtered.map(p => `
-            <a href="#" class="list-group-item list-group-item-action" data-id="${p.id}" data-nombre="${p.nombre}">
+            <a href="#" class="list-group-item list-group-item-action" data-id="${p.Id}" data-nombre="${p.nombre}">
                 <div class="d-flex w-100 justify-content-between">
                     <h6 class="mb-1">${p.nombre}</h6>
                     <small class="text-muted">${p.identificacion}</small>
