@@ -45,7 +45,21 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 
 // Registrar servicios en DI
 builder.Services.Configure<MongoSettings>(builder.Configuration.GetSection("Mongo"));
+
+// Configurar MongoDB
+var mongoConfig = builder.Configuration.GetSection("Mongo");
+var connectionString = mongoConfig.GetValue<string>("ConnectionString");
+var databaseName = mongoConfig.GetValue<string>("Database");
+
+builder.Services.AddSingleton<IMongoClient>(_ => new MongoClient(connectionString));
+builder.Services.AddSingleton<IMongoDatabase>(provider =>
+{
+    var client = provider.GetRequiredService<IMongoClient>();
+    return client.GetDatabase(databaseName);
+});
 builder.Services.AddSingleton<MongoService>();
+
+// Servicios de negocio
 builder.Services.AddSingleton<IUsuarioService, UsuarioService>();
 builder.Services.AddSingleton<IRolService, RolService>();
 
@@ -89,20 +103,6 @@ builder.Services.AddRazorPages(options =>
  options.Conventions.AuthorizeFolder("/Pescadores", "EditorOrAdmin");
  options.Conventions.AuthorizeFolder("/Embarcaciones", "EditorOrAdmin");
 });
-
-// Mongo client
-var mongoConfig = builder.Configuration.GetSection("Mongo");
-var connectionString = mongoConfig.GetValue<string>("ConnectionString");
-var databaseName = mongoConfig.GetValue<string>("Database");
-
-builder.Services.AddSingleton<IMongoClient>(_ => new MongoClient(connectionString));
-builder.Services.AddSingleton(provider =>
-{
- var client = provider.GetRequiredService<IMongoClient>();
- return client.GetDatabase(databaseName);
-});
-
-builder.Services.AddScoped<AtlasViewer.Services.MongoService>();
 
 // Auth
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
