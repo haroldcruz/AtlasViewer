@@ -1,0 +1,59 @@
+@page
+@model AtlasViewer.Pages.SitiosPesca.DetailsModel
+@{
+    ViewData["Title"] = "Detalles de Sitio de Pesca";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h3 class="mb-0"><i class="bi bi-eye"></i> Detalles de Sitio de Pesca</h3>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Código:</dt>
+                <dd class="col-sm-9"><code>@Model.SitioPesca.codigo</code></dd>
+
+                <dt class="col-sm-3">Nombre:</dt>
+                <dd class="col-sm-9"><strong>@Model.SitioPesca.nombre</strong></dd>
+
+                <dt class="col-sm-3">Descripción:</dt>
+                <dd class="col-sm-9">@Model.SitioPesca.descripcion</dd>
+
+                <dt class="col-sm-3">Latitud:</dt>
+                <dd class="col-sm-9">@Model.SitioPesca.latitud.ToString("F6")</dd>
+
+                <dt class="col-sm-3">Longitud:</dt>
+                <dd class="col-sm-9">@Model.SitioPesca.longitud.ToString("F6")</dd>
+
+                <dt class="col-sm-3">Coordenadas:</dt>
+                <dd class="col-sm-9">
+                    <a href="https://www.google.com/maps?q=@Model.SitioPesca.latitud,@Model.SitioPesca.longitud" target="_blank" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-geo-alt-fill"></i> Ver en Google Maps
+                    </a>
+                </dd>
+
+                <dt class="col-sm-3">Estado:</dt>
+                <dd class="col-sm-9">
+                    @if (Model.SitioPesca.activo)
+                    {
+                        <span class="badge bg-success">Activo</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Inactivo</span>
+                    }
+                </dd>
+            </dl>
+
+            <div class="d-flex gap-2 mt-4">
+                <a asp-page="Edit" asp-route-id="@Model.SitioPesca.Id" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a asp-page="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al Listado
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

@@ -19,5 +19,11 @@ public class SitioPesca
  [StringLength(500)]
  public string descripcion { get; set; } = string.Empty;
 
+ [Range(-90, 90)]
+ public double latitud { get; set; }
+
+ [Range(-180, 180)]
+ public double longitud { get; set; }
+
  public bool activo { get; set; } = true;
 }
