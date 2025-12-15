@@ -1,0 +1,475 @@
+@page
+@model AtlasViewer.Pages.RegistrosCapturas.CreateModel
+@{
+    ViewData["Title"] = "Registro de Capturas de Pesca";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h3 class="mb-0"><i class="bi bi-clipboard-check"></i> Registro de Capturas de Pesca / Asomixta</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" id="formRegistro">
+                
+                <!-- Datos de Cabecera -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Pescador <span class="text-danger">*</span></label>
+                        <input type="hidden" asp-for="RegistroCaptura.pescadorId" id="pescadorId" />
+                        <input type="text" id="pescadorSearch" class="form-control" placeholder="Buscar por identificación..." autocomplete="off" />
+                        <div id="pescadorResults" class="list-group pescador-results-dropdown"></div>
+                        <div id="pescadorSelected"></div>
+                        <span asp-validation-for="RegistroCaptura.pescadorId" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="RegistroCaptura.embarcacionId" class="form-label">Embarcación <span class="text-danger">*</span></label>
+                        <select asp-for="RegistroCaptura.embarcacionId" class="form-select" id="embarcacionSelect" disabled>
+                            <option value="">Seleccione embarcación</option>
+                        </select>
+                        <span asp-validation-for="RegistroCaptura.embarcacionId" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="col-md-2 mb-3">
+                        <label asp-for="RegistroCaptura.fecha" class="form-label">Fecha</label>
+                        <input asp-for="RegistroCaptura.fecha" type="date" class="form-control" readonly />
+                    </div>
+                    
+                    <div class="col-md-2 mb-3">
+                        <label asp-for="RegistroCaptura.hora" class="form-label">Hora</label>
+                        <input asp-for="RegistroCaptura.hora" type="time" class="form-control" readonly />
+                    </div>
+                    
+                    <div class="col-md-2 mb-3">
+                        <label asp-for="RegistroCaptura.sitioPescaId" class="form-label">Sitio de Pesca</label>
+                        <select asp-for="RegistroCaptura.sitioPescaId" class="form-select">
+                            <option value="">Seleccione sitio</option>
+                            @foreach (var sitio in Model.SitiosPesca)
+                            {
+                                <option value="@sitio.Id">@sitio.nombre</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="RegistroCaptura.artePescaId" class="form-label">Arte de Pesca</label>
+                        <select asp-for="RegistroCaptura.artePescaId" class="form-select">
+                            <option value="">Seleccione arte</option>
+                            @foreach (var arte in Model.ArtesPesca)
+                            {
+                                <option value="@arte.Id">@arte.nombre</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <!-- Captura e Insumos lado a lado -->
+                <div class="row">
+                    <!-- CAPTURA -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Captura</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-bordered tabla-captura">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="col-especie">Especie</th>
+                                                <th class="col-numero">Número</th>
+                                                <th class="col-peso">Peso (kg)</th>
+                                                <th class="col-precio">Precio/kg</th>
+                                                <th class="col-total">Total</th>
+                                                <th class="col-acciones"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="capturaBody">
+                                            <!-- Líneas dinámicas -->
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th colspan="4" class="text-end">Total:</th>
+                                                <th><span id="totalCaptura">0.00</span></th>
+                                                <th></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="btnAgregarCaptura">
+                                    <i class="bi bi-plus-circle"></i> Agregar línea
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- INSUMOS -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">Alisto / Insumos Consumidos</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-bordered tabla-insumos">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="col-insumo">Insumo</th>
+                                                <th class="col-cantidad">Cantidad</th>
+                                                <th class="col-precio-insumo">Precio</th>
+                                                <th class="col-total-insumo">Total</th>
+                                                <th class="col-acciones"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="insumosBody">
+                                            <!-- Líneas dinámicas -->
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th colspan="3" class="text-end">Total:</th>
+                                                <th><span id="totalInsumos">0.00</span></th>
+                                                <th></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-info" id="btnAgregarInsumo">
+                                    <i class="bi bi-plus-circle"></i> Agregar línea
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <!-- Secciones Opcionales -->
+                <div class="mb-3">
+                    <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-toggle-seccion="monitoreoBiologico">
+                        <i class="bi bi-clipboard-data"></i> Monitoreo Biológico
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-toggle-seccion="pescaIncidental">
+                        <i class="bi bi-exclamation-triangle"></i> Pesca Incidental/Acompañante
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle-seccion="pescaFantasma">
+                        <i class="bi bi-trash"></i> Pesca Fantasma
+                    </button>
+                </div>
+
+                <!-- Placeholder Monitoreo Biológico -->
+                <div id="monitoreoBiologico" class="card mb-3 d-none">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Monitoreo Biológico</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Sección en desarrollo...</p>
+                    </div>
+                </div>
+
+                <!-- Placeholder Pesca Incidental -->
+                <div id="pescaIncidental" class="card mb-3 d-none">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">Pesca Incidental / Acompañante</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Sección en desarrollo...</p>
+                    </div>
+                </div>
+
+                <!-- Placeholder Pesca Fantasma -->
+                <div id="pescaFantasma" class="card mb-3 d-none">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0">Pesca Fantasma</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Sección en desarrollo...</p>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <!-- Botones de acción -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Guardar Registro
+                    </button>
+                    <a asp-page="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script nonce="@HttpContext.Items["csp-nonce"]">
+        const pescadores = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Pescadores));
+        const especies = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Especies));
+        const insumos = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Insumos));
+        const embarcaciones = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Embarcaciones));
+        
+        let contadorCaptura = 0;
+        let contadorInsumo = 0;
+
+        // Búsqueda de pescador
+        const pescadorSearch = document.getElementById('pescadorSearch');
+        const pescadorResults = document.getElementById('pescadorResults');
+        const pescadorSelected = document.getElementById('pescadorSelected');
+        const pescadorIdInput = document.getElementById('pescadorId');
+        const embarcacionSelect = document.getElementById('embarcacionSelect');
+
+        pescadorSearch.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            if (!query) {
+                pescadorResults.classList.remove('show');
+                return;
+            }
+
+            const filtered = pescadores.filter(p => 
+                p.identificacion.toLowerCase().includes(query) ||
+                p.nombre.toLowerCase().includes(query)
+            ).slice(0, 10);
+
+            if (filtered.length === 0) {
+                pescadorResults.innerHTML = '<div class="list-group-item">No se encontraron pescadores</div>';
+                pescadorResults.classList.add('show');
+                return;
+            }
+
+            pescadorResults.innerHTML = filtered.map(p => `
+                <a href="#" class="list-group-item list-group-item-action" data-id="${p.Id}" data-nombre="${p.nombre}">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">${p.nombre}</h6>
+                        <small class="text-muted">${p.identificacion}</small>
+                    </div>
+                </a>
+            `).join('');
+            pescadorResults.classList.add('show');
+        });
+
+        pescadorResults.addEventListener('click', (e) => {
+            e.preventDefault();
+            const item = e.target.closest('[data-id]');
+            if (item) {
+                const id = item.getAttribute('data-id');
+                const nombre = item.getAttribute('data-nombre');
+                pescadorIdInput.value = id;
+                pescadorSearch.value = '';
+                pescadorResults.classList.remove('show');
+                pescadorSelected.innerHTML = `<div class="alert alert-info mt-2">Pescador: <strong>${nombre}</strong></div>`;
+                
+                // Cargar embarcaciones del pescador
+                cargarEmbarcaciones(id);
+            }
+        });
+
+        function cargarEmbarcaciones(pescadorId) {
+            const embarcacionesFiltradas = embarcaciones.filter(e => e.pescadorId === pescadorId);
+            embarcacionSelect.innerHTML = '<option value="">Seleccione embarcación</option>';
+            embarcacionesFiltradas.forEach(e => {
+                embarcacionSelect.innerHTML += `<option value="${e.Id}">${e.matricula || e.nombre}</option>`;
+            });
+            embarcacionSelect.disabled = embarcacionesFiltradas.length === 0;
+        }
+
+        // Agregar línea de captura
+        function agregarLineaCaptura() {
+            contadorCaptura++;
+            const row = `
+                <tr data-index="${contadorCaptura}">
+                    <td>
+                        <input type="text" class="form-control form-control-sm codigo-especie" 
+                               data-index="${contadorCaptura}" placeholder="Código" />
+                        <input type="hidden" class="especieId" name="Capturas[${contadorCaptura}].especieId" />
+                        <small class="nombre-especie text-muted"></small>
+                    </td>
+                    <td><input type="number" class="form-control form-control-sm numero-peces" 
+                               name="Capturas[${contadorCaptura}].numeroPeces" min="0" step="1" /></td>
+                    <td><input type="number" class="form-control form-control-sm peso-kg" 
+                               name="Capturas[${contadorCaptura}].pesoTotalKg" min="0" step="0.01" /></td>
+                    <td><input type="number" class="form-control form-control-sm precio-kg" 
+                               name="Capturas[${contadorCaptura}].precioKilo" min="0" step="0.01" /></td>
+                    <td><input type="number" class="form-control form-control-sm total-linea" 
+                               name="Capturas[${contadorCaptura}].total" readonly /></td>
+                    <td><button type="button" class="btn btn-sm btn-danger btn-eliminar-captura" data-index="${contadorCaptura}">
+                        <i class="bi bi-trash"></i></button></td>
+                </tr>
+            `;
+            document.getElementById('capturaBody').insertAdjacentHTML('beforeend', row);
+            attachEventosCaptura(contadorCaptura);
+        }
+
+        function attachEventosCaptura(index) {
+            const row = document.querySelector(`#capturaBody tr[data-index="${index}"]`);
+            const codigoInput = row.querySelector('.codigo-especie');
+            const especieIdInput = row.querySelector('.especieId');
+            const nombreSpan = row.querySelector('.nombre-especie');
+            const numeroPecesInput = row.querySelector('.numero-peces');
+            const pesoInput = row.querySelector('.peso-kg');
+            const precioInput = row.querySelector('.precio-kg');
+            const totalInput = row.querySelector('.total-linea');
+
+            codigoInput.addEventListener('blur', function() {
+                const codigo = this.value.trim();
+                if (!codigo) return;
+
+                const especie = especies.find(e => e.codigo.toLowerCase() === codigo.toLowerCase());
+                if (especie) {
+                    especieIdInput.value = especie.Id;
+                    nombreSpan.textContent = especie.nombre;
+                    precioInput.value = especie.precioPromedioCompra || 0;
+                    numeroPecesInput.focus();
+                } else {
+                    alert('Especie no encontrada');
+                    this.value = '';
+                }
+            });
+
+            [pesoInput, precioInput].forEach(input => {
+                input.addEventListener('input', () => {
+                    const peso = parseFloat(pesoInput.value) || 0;
+                    const precio = parseFloat(precioInput.value) || 0;
+                    totalInput.value = (peso * precio).toFixed(2);
+                    calcularTotalCaptura();
+                });
+            });
+        }
+
+        function eliminarLineaCaptura(index) {
+            document.querySelector(`#capturaBody tr[data-index="${index}"]`).remove();
+            calcularTotalCaptura();
+        }
+
+        function calcularTotalCaptura() {
+            let total = 0;
+            document.querySelectorAll('#capturaBody .total-linea').forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            document.getElementById('totalCaptura').textContent = total.toFixed(2);
+        }
+
+        // Agregar línea de insumo
+        function agregarLineaInsumo() {
+            contadorInsumo++;
+            const row = `
+                <tr data-index="${contadorInsumo}">
+                    <td>
+                        <input type="text" class="form-control form-control-sm codigo-insumo" 
+                               data-index="${contadorInsumo}" placeholder="Código" />
+                        <input type="hidden" class="insumoId" name="Insumos[${contadorInsumo}].insumoId" />
+                        <small class="nombre-insumo text-muted"></small>
+                    </td>
+                    <td><input type="number" class="form-control form-control-sm cantidad-insumo" 
+                               name="Insumos[${contadorInsumo}].cantidad" min="0" step="0.01" /></td>
+                    <td><input type="number" class="form-control form-control-sm precio-insumo" 
+                               name="Insumos[${contadorInsumo}].precioUnitario" min="0" step="0.01" /></td>
+                    <td><input type="number" class="form-control form-control-sm total-insumo" 
+                               name="Insumos[${contadorInsumo}].subtotal" readonly /></td>
+                    <td><button type="button" class="btn btn-sm btn-danger btn-eliminar-insumo" data-index="${contadorInsumo}">
+                        <i class="bi bi-trash"></i></button></td>
+                </tr>
+            `;
+            document.getElementById('insumosBody').insertAdjacentHTML('beforeend', row);
+            attachEventosInsumo(contadorInsumo);
+        }
+
+        function attachEventosInsumo(index) {
+            const row = document.querySelector(`#insumosBody tr[data-index="${index}"]`);
+            const codigoInput = row.querySelector('.codigo-insumo');
+            const insumoIdInput = row.querySelector('.insumoId');
+            const nombreSpan = row.querySelector('.nombre-insumo');
+            const cantidadInput = row.querySelector('.cantidad-insumo');
+            const precioInput = row.querySelector('.precio-insumo');
+            const totalInput = row.querySelector('.total-insumo');
+
+            codigoInput.addEventListener('blur', function() {
+                const codigo = this.value.trim();
+                if (!codigo) return;
+
+                const insumo = insumos.find(i => i.codigo.toLowerCase() === codigo.toLowerCase());
+                if (insumo) {
+                    insumoIdInput.value = insumo.Id;
+                    nombreSpan.textContent = insumo.nombre + ' (' + insumo.unidad + ')';
+                    precioInput.value = insumo.precioPromedioVenta || 0;
+                    cantidadInput.focus();
+                } else {
+                    alert('Insumo no encontrado');
+                    this.value = '';
+                }
+            });
+
+            [cantidadInput, precioInput].forEach(input => {
+                input.addEventListener('input', () => {
+                    const cantidad = parseFloat(cantidadInput.value) || 0;
+                    const precio = parseFloat(precioInput.value) || 0;
+                    totalInput.value = (cantidad * precio).toFixed(2);
+                    calcularTotalInsumos();
+                });
+            });
+        }
+
+        function eliminarLineaInsumo(index) {
+            document.querySelector(`#insumosBody tr[data-index="${index}"]`).remove();
+            calcularTotalInsumos();
+        }
+
+        function calcularTotalInsumos() {
+            let total = 0;
+            document.querySelectorAll('#insumosBody .total-insumo').forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            document.getElementById('totalInsumos').textContent = total.toFixed(2);
+        }
+
+        // Toggle secciones opcionales
+        function toggleSeccion(seccionId) {
+            const seccion = document.getElementById(seccionId);
+            seccion.classList.toggle('d-none');
+        }
+
+        // Delegación de eventos para botones de eliminar
+        document.getElementById('capturaBody').addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-eliminar-captura');
+            if (btn) {
+                const index = btn.getAttribute('data-index');
+                document.querySelector(`#capturaBody tr[data-index="${index}"]`).remove();
+                calcularTotalCaptura();
+            }
+        });
+
+        document.getElementById('insumosBody').addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-eliminar-insumo');
+            if (btn) {
+                const index = btn.getAttribute('data-index');
+                document.querySelector(`#insumosBody tr[data-index="${index}"]`).remove();
+                calcularTotalInsumos();
+            }
+        });
+
+        // Event listeners para botones de agregar
+        document.getElementById('btnAgregarCaptura').addEventListener('click', agregarLineaCaptura);
+        document.getElementById('btnAgregarInsumo').addEventListener('click', agregarLineaInsumo);
+
+        // Event listeners para toggle de secciones
+        document.querySelectorAll('[data-toggle-seccion]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const seccionId = this.getAttribute('data-toggle-seccion');
+                toggleSeccion(seccionId);
+            });
+        });
+
+        // Inicializar con una línea de cada tipo
+        window.addEventListener('DOMContentLoaded', function() {
+            agregarLineaCaptura();
+            agregarLineaInsumo();
+        });
+    </script>
+}

@@ -28,10 +28,19 @@ builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: false)
     .AddEnvironmentVariables();
 
-// Configurar encoding UTF-8 y cultura española
+// Configurar encoding UTF-8 y cultura costarricense
 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("es-ES");
-CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("es-ES");
+var culture = new CultureInfo("es-CR");
+// Configurar formato de números estándar para Costa Rica
+culture.NumberFormat.CurrencySymbol = "₡";
+culture.NumberFormat.CurrencyDecimalSeparator = ".";
+culture.NumberFormat.CurrencyGroupSeparator = ",";
+culture.NumberFormat.CurrencyDecimalDigits = 2;
+culture.NumberFormat.NumberDecimalSeparator = ".";
+culture.NumberFormat.NumberGroupSeparator = ",";
+culture.NumberFormat.NumberDecimalDigits = 2;
+CultureInfo.DefaultThreadCurrentCulture = culture;
+CultureInfo.DefaultThreadCurrentUICulture = culture;
 
 // Configurar cookies globales
 builder.Services.Configure<CookiePolicyOptions>(options =>

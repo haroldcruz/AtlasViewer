@@ -1,0 +1,109 @@
+@page
+@model AtlasViewer.Pages.RegistrosCapturas.IndexModel
+@{
+    ViewData["Title"] = "Registros de Capturas";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-clipboard-check"></i> Registros de Capturas</h3>
+            <a asp-page="Create" class="btn btn-light">
+                <i class="bi bi-plus-circle"></i> Nuevo Registro
+            </a>
+        </div>
+        <div class="card-body">
+            @if (Model.Registros.Count == 0)
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No hay registros de capturas. 
+                    <a asp-page="Create" class="alert-link">Crear el primero</a>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-success">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Pescador</th>
+                                <th>Embarcación</th>
+                                <th>Sitio</th>
+                                <th>Arte</th>
+                                <th>Capturas</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var registro in Model.Registros)
+                            {
+                                <tr>
+                                    <td>@registro.fecha.ToString("dd/MM/yyyy")</td>
+                                    <td>@registro.hora</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(registro.pescadorId) && Model.PescadoresDict.ContainsKey(registro.pescadorId))
+                                        {
+                                            @Model.PescadoresDict[registro.pescadorId]
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(registro.embarcacionId) && Model.EmbarcacionesDict.ContainsKey(registro.embarcacionId))
+                                        {
+                                            @Model.EmbarcacionesDict[registro.embarcacionId]
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(registro.sitioPescaId) && Model.SitiosDict.ContainsKey(registro.sitioPescaId))
+                                        {
+                                            @Model.SitiosDict[registro.sitioPescaId]
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(registro.artePescaId) && Model.ArtesDict.ContainsKey(registro.artePescaId))
+                                        {
+                                            @Model.ArtesDict[registro.artePescaId]
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">@(registro.capturas?.Count ?? 0) especies</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <a asp-page="Details" asp-route-id="@registro.Id" class="btn btn-sm btn-info" title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a asp-page="Edit" asp-route-id="@registro.Id" class="btn btn-sm btn-warning" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-page="Delete" asp-route-id="@registro.Id" class="btn btn-sm btn-danger" title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</section>

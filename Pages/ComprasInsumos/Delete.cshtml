@@ -1,0 +1,105 @@
+@page
+@model AtlasViewer.Pages.ComprasInsumos.DeleteModel
+@{
+    ViewData["Title"] = "Eliminar Compra";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm border-danger">
+        <div class="card-header bg-danger text-white">
+            <h3 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Eliminar Compra de Insumos</h3>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <strong>¿Está seguro que desea eliminar esta compra?</strong>
+                <p class="mb-0 mt-2">Esta acción no se puede deshacer.</p>
+                <p class="mb-0 text-danger"><strong>ADVERTENCIA:</strong> Eliminar esta compra NO revertirá los cambios en el inventario de insumos.</p>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <h6 class="text-muted">Fecha de Compra</h6>
+                    <p class="fs-5">
+                        <i class="bi bi-calendar-event"></i>
+                        @Model.Compra.fecha.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <h6 class="text-muted">Proveedor</h6>
+                    <p class="fs-5">
+                        @if (Model.Proveedor != null)
+                        {
+                            <i class="bi bi-building"></i>
+                            <text>@Model.Proveedor.nombre</text>
+                        }
+                        else
+                        {
+                            <span class="text-muted fst-italic">Sin proveedor</span>
+                        }
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <h6 class="text-muted">Total</h6>
+                    <p class="fs-4 text-success">
+                        <strong>₡@Model.Compra.total.ToString("N2")</strong>
+                    </p>
+                </div>
+            </div>
+
+            <h6 class="mb-3">Detalle de la Compra:</h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Insumo</th>
+                            <th class="text-center">Cantidad</th>
+                            <th class="text-end">Costo Unit.</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var detalle in Model.Compra.detalle)
+                        {
+                            var insumo = Model.InsumosDict.ContainsKey(detalle.insumoId ?? "")
+                                ? Model.InsumosDict[detalle.insumoId!]
+                                : null;
+                            <tr>
+                                <td>
+                                    @if (insumo != null)
+                                    {
+                                        <text>@insumo.codigo - @insumo.nombre</text>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Insumo no encontrado</span>
+                                    }
+                                </td>
+                                <td class="text-center">@detalle.cantidad.ToString("N2")</td>
+                                <td class="text-end">₡@detalle.costoUnitario.ToString("N2")</td>
+                                <td class="text-end">₡@detalle.subtotal.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <hr class="my-4" />
+
+            <form method="post">
+                <input type="hidden" asp-for="Compra.Id" />
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Confirmar Eliminación
+                    </button>
+                    <a asp-page="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

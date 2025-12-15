@@ -1,0 +1,84 @@
+@page
+@model AtlasViewer.Pages.ComprasInsumos.IndexModel
+@{
+    ViewData["Title"] = "Compras de Insumos";
+}
+
+<section class="page-section">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="bi bi-cart-check"></i> Compras de Insumos</h2>
+        @if (User.IsInRole("Administrador") || User.IsInRole("Editor"))
+        {
+            <a asp-page="Create" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Nueva Compra
+            </a>
+        }
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Listado de Compras</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Compras.Count == 0)
+            {
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle"></i> No hay compras registradas.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Proveedor</th>
+                                <th>Total Items</th>
+                                <th class="text-end">Total</th>
+                                <th style="width: 150px;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var compra in Model.Compras)
+                            {
+                                <tr>
+                                    <td>@compra.fecha.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(compra.proveedorId) && Model.ProveedoresDict.ContainsKey(compra.proveedorId))
+                                        {
+                                            <text>@Model.ProveedoresDict[compra.proveedorId]</text>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted fst-italic">Sin proveedor</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@compra.detalle.Count item(s)</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong>₡@compra.total.ToString("N2")</strong>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-page="Details" asp-route-id="@compra.Id" class="btn btn-sm btn-info" title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            @if (User.IsInRole("Administrador"))
+                                            {
+                                                <a asp-page="Delete" asp-route-id="@compra.Id" class="btn btn-sm btn-danger" title="Eliminar">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</section>

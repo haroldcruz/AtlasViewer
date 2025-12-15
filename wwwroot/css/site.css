@@ -29,3 +29,31 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+/* Dropdown de resultados de búsqueda */
+.pescador-results-dropdown {
+  position: absolute;
+  z-index: 1050;
+  max-height: 300px;
+  overflow-y: auto;
+  display: none;
+  width: calc(100% - 30px);
+}
+
+.pescador-results-dropdown.show {
+  display: block;
+}
+
+/* Tablas de registro de capturas */
+.tabla-captura .col-especie { width: 20%; }
+.tabla-captura .col-numero { width: 15%; }
+.tabla-captura .col-peso { width: 15%; }
+.tabla-captura .col-precio { width: 20%; }
+.tabla-captura .col-total { width: 20%; }
+.tabla-captura .col-acciones { width: 10%; }
+
+.tabla-insumos .col-insumo { width: 30%; }
+.tabla-insumos .col-cantidad { width: 20%; }
+.tabla-insumos .col-precio-insumo { width: 25%; }
+.tabla-insumos .col-total-insumo { width: 25%; }
+.tabla-insumos .col-acciones { width: 10%; }

@@ -1,0 +1,160 @@
+@page
+@model AtlasViewer.Pages.RegistrosCapturas.DetailsModel
+@{
+    ViewData["Title"] = "Detalles del Registro";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h3 class="mb-0"><i class="bi bi-info-circle"></i> Detalles del Registro de Captura</h3>
+        </div>
+        <div class="card-body">
+            @if (Model.RegistroCaptura == null)
+            {
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle"></i> Registro no encontrado.
+                </div>
+                <a asp-page="Index" class="btn btn-secondary">Volver al listado</a>
+            }
+            else
+            {
+                <!-- Información General -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Pescador:</dt>
+                            <dd class="col-sm-8">@Model.PescadorNombre</dd>
+
+                            <dt class="col-sm-4">Embarcación:</dt>
+                            <dd class="col-sm-8">@Model.EmbarcacionNombre</dd>
+
+                            <dt class="col-sm-4">Fecha:</dt>
+                            <dd class="col-sm-8">@Model.RegistroCaptura.fecha.ToString("dd/MM/yyyy")</dd>
+
+                            <dt class="col-sm-4">Hora:</dt>
+                            <dd class="col-sm-8">@Model.RegistroCaptura.hora</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Sitio de Pesca:</dt>
+                            <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.SitioNombre) ? "No especificado" : Model.SitioNombre)</dd>
+
+                            <dt class="col-sm-4">Arte de Pesca:</dt>
+                            <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.ArteNombre) ? "No especificado" : Model.ArteNombre)</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <hr />
+
+                <!-- Capturas -->
+                <h4 class="mb-3"><i class="bi bi-fish"></i> Capturas</h4>
+                @if (Model.RegistroCaptura.capturas == null || !Model.RegistroCaptura.capturas.Any())
+                {
+                    <div class="alert alert-warning">No hay capturas registradas.</div>
+                }
+                else
+                {
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Especie</th>
+                                    <th>Número de Peces</th>
+                                    <th>Peso Total (kg)</th>
+                                    <th>Precio/kg</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    decimal totalCaptura = 0;
+                                }
+                                @foreach (var captura in Model.RegistroCaptura.capturas)
+                                {
+                                    totalCaptura += captura.total;
+                                    <tr>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(captura.especieId) && Model.EspeciesDict.ContainsKey(captura.especieId))
+                                            {
+                                                @Model.EspeciesDict[captura.especieId]
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Especie no encontrada</span>
+                                            }
+                                        </td>
+                                        <td>@captura.numeroPeces</td>
+                                        <td>@captura.pesoTotalKg.ToString("N2")</td>
+                                        <td>₡@captura.precioKilo.ToString("N2")</td>
+                                        <td>₡@captura.total.ToString("N2")</td>
+                                    </tr>
+                                    
+                                    @if (captura.insumos != null && captura.insumos.Any())
+                                    {
+                                        <tr>
+                                            <td colspan="5" class="bg-light">
+                                                <strong>Insumos consumidos para esta especie:</strong>
+                                                <table class="table table-sm table-borderless mt-2 mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Insumo</th>
+                                                            <th>Cantidad</th>
+                                                            <th>Precio Unitario</th>
+                                                            <th>Subtotal</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var insumo in captura.insumos)
+                                                        {
+                                                            <tr>
+                                                                <td>
+                                                                    @if (!string.IsNullOrEmpty(insumo.insumoId) && Model.InsumosDict.ContainsKey(insumo.insumoId))
+                                                                    {
+                                                                        @Model.InsumosDict[insumo.insumoId]
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span class="text-muted">Insumo no encontrado</span>
+                                                                    }
+                                                                </td>
+                                                                <td>@insumo.cantidad.ToString("N2")</td>
+                                                                <td>₡@insumo.precioUnitario.ToString("N2")</td>
+                                                                <td>₡@insumo.subtotal.ToString("N2")</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-success">
+                                    <th colspan="4" class="text-end">Total Capturas:</th>
+                                    <th>₡@totalCaptura.ToString("N2")</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                }
+
+                <!-- Acciones -->
+                <div class="d-flex gap-2">
+                    <a asp-page="Edit" asp-route-id="@Model.RegistroCaptura.Id" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <a asp-page="Delete" asp-route-id="@Model.RegistroCaptura.Id" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </a>
+                    <a asp-page="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver al listado
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>

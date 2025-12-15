@@ -1,0 +1,90 @@
+@page
+@model AtlasViewer.Pages.Insumos.CreateModel
+@{
+    ViewData["Title"] = "Crear Insumo";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h3 class="mb-0"><i class="bi bi-plus-circle"></i> Crear Nuevo Insumo</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Insumo.codigo" class="form-label">Código <span class="text-danger">*</span></label>
+                        <input asp-for="Insumo.codigo" class="form-control" placeholder="Ej: INS001" />
+                        <span asp-validation-for="Insumo.codigo" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Insumo.nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                        <input asp-for="Insumo.nombre" class="form-control" placeholder="Ej: Carnada, Hielo, Combustible" />
+                        <span asp-validation-for="Insumo.nombre" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Insumo.unidad" class="form-label">Unidad de Medida <span class="text-danger">*</span></label>
+                        <input asp-for="Insumo.unidad" class="form-control" placeholder="Ej: kg, litro, unidad" />
+                        <span asp-validation-for="Insumo.unidad" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Insumo.inventarioActual" class="form-label">Inventario Actual</label>
+                        <input asp-for="Insumo.inventarioActual" type="number" class="form-control" step="0.01" min="0" />
+                        <span asp-validation-for="Insumo.inventarioActual" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check mt-4">
+                            <input asp-for="Insumo.activo" class="form-check-input" type="checkbox" />
+                            <label asp-for="Insumo.activo" class="form-check-label">
+                                Activo
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Insumo.precioPromedioCompra" class="form-label">Precio Promedio Compra</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input asp-for="Insumo.precioPromedioCompra" type="number" class="form-control" step="0.01" min="0" />
+                        </div>
+                        <span asp-validation-for="Insumo.precioPromedioCompra" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Insumo.precioPromedioVenta" class="form-label">Precio Promedio Venta</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input asp-for="Insumo.precioPromedioVenta" type="number" class="form-control" step="0.01" min="0" />
+                        </div>
+                        <span asp-validation-for="Insumo.precioPromedioVenta" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Guardar
+                    </button>
+                    <a asp-page="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

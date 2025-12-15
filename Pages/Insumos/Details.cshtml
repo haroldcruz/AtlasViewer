@@ -1,0 +1,89 @@
+@page
+@model AtlasViewer.Pages.Insumos.DetailsModel
+@{
+    ViewData["Title"] = "Detalles del Insumo";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h3 class="mb-0"><i class="bi bi-info-circle"></i> Detalles del Insumo</h3>
+        </div>
+        <div class="card-body">
+            @if (Model.Insumo == null)
+            {
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle"></i> Insumo no encontrado.
+                </div>
+                <a asp-page="Index" class="btn btn-secondary">Volver al listado</a>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Código:</dt>
+                            <dd class="col-sm-8"><strong class="text-primary">@Model.Insumo.codigo</strong></dd>
+
+                            <dt class="col-sm-4">Nombre:</dt>
+                            <dd class="col-sm-8">@Model.Insumo.nombre</dd>
+
+                            <dt class="col-sm-4">Unidad:</dt>
+                            <dd class="col-sm-8">@Model.Insumo.unidad</dd>
+
+                            <dt class="col-sm-4">Inventario:</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge bg-secondary">@Model.Insumo.inventarioActual.ToString("N2") @Model.Insumo.unidad</span>
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Precio Compra:</dt>
+                            <dd class="col-sm-7">₡@Model.Insumo.precioPromedioCompra.ToString("N2")</dd>
+
+                            <dt class="col-sm-5">Precio Promedio de Venta:</dt>
+                            <dd class="col-sm-7">₡@Model.Insumo.precioPromedioVenta.ToString("N2")</dd>
+
+                            <dt class="col-sm-5">Margen:</dt>
+                            <dd class="col-sm-7">
+                                @{
+                                    var margen = Model.Insumo.precioPromedioCompra > 0 
+                                        ? ((Model.Insumo.precioPromedioVenta - Model.Insumo.precioPromedioCompra) / Model.Insumo.precioPromedioCompra * 100)
+                                        : 0;
+                                }
+                                <span class="badge @(margen > 0 ? "bg-success" : "bg-danger")">@margen.ToString("N2")%</span>
+                            </dd>
+
+                            <dt class="col-sm-5">Estado:</dt>
+                            <dd class="col-sm-7">
+                                @if (Model.Insumo.activo)
+                                {
+                                    <span class="badge bg-success">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactivo</span>
+                                }
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex gap-2">
+                    <a asp-page="Edit" asp-route-id="@Model.Insumo.Id" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <a asp-page="Delete" asp-route-id="@Model.Insumo.Id" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </a>
+                    <a asp-page="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver al listado
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>

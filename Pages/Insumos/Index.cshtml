@@ -1,0 +1,122 @@
+@page
+@model AtlasViewer.Pages.Insumos.IndexModel
+@{
+    ViewData["Title"] = "Insumos";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-box-seam"></i> Insumos de Pesca</h3>
+            <a asp-page="Create" class="btn btn-light">
+                <i class="bi bi-plus-circle"></i> Nuevo Insumo
+            </a>
+        </div>
+        <div class="card-body">
+            @* Alertas de inventario bajo *@
+            @{
+                var insumosBajos = Model.Insumos.Where(i => i.activo && i.inventarioActual <= 2).ToList();
+            }
+            @if (insumosBajos.Any())
+            {
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> ⚠️ Inventario Bajo</h5>
+                    <ul class="mb-0">
+                        @foreach (var insumo in insumosBajos.OrderBy(i => i.inventarioActual))
+                        {
+                            <li>
+                                <strong>@insumo.nombre</strong>: 
+                                @if (insumo.inventarioActual <= 0)
+                                {
+                                    <span class="badge bg-danger">AGOTADO</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">@insumo.inventarioActual.ToString("N2") @insumo.unidad disponibles</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @if (Model.Insumos.Count == 0)
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No hay insumos registrados. 
+                    <a asp-page="Create" class="alert-link">Crear el primero</a>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Unidad</th>
+                                <th>Inventario</th>
+                                <th>Precio Compra</th>
+                                <th>Precio Venta</th>
+                                <th>Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var insumo in Model.Insumos)
+                            {
+                                <tr class="@(insumo.inventarioActual <= 2 && insumo.activo ? "table-warning" : "")">
+                                    <td><strong>@insumo.codigo</strong></td>
+                                    <td>
+                                        @insumo.nombre
+                                        @if (insumo.inventarioActual <= 0 && insumo.activo)
+                                        {
+                                            <span class="badge bg-danger ms-2">AGOTADO</span>
+                                        }
+                                        else if (insumo.inventarioActual <= 2 && insumo.activo)
+                                        {
+                                            <span class="badge bg-warning text-dark ms-2">BAJO</span>
+                                        }
+                                    </td>
+                                    <td>@insumo.unidad</td>
+                                    <td>
+                                        <strong class="@(insumo.inventarioActual <= 0 ? "text-danger" : insumo.inventarioActual <= 2 ? "text-warning" : "")">
+                                            @insumo.inventarioActual.ToString("N2")
+                                        </strong>
+                                    </td>
+                                    <td>₡@insumo.precioPromedioCompra.ToString("N2")</td>
+                                    <td>₡@insumo.precioPromedioVenta.ToString("N2")</td>
+                                    <td>
+                                        @if (insumo.activo)
+                                        {
+                                            <span class="badge bg-success">Activo</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inactivo</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <a asp-page="Details" asp-route-id="@insumo.Id" class="btn btn-sm btn-info" title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a asp-page="Edit" asp-route-id="@insumo.Id" class="btn btn-sm btn-warning" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-page="Delete" asp-route-id="@insumo.Id" class="btn btn-sm btn-danger" title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</section>

@@ -1,0 +1,226 @@
+@page
+@model AtlasViewer.Pages.ComprasInsumos.CreateModel
+@{
+    ViewData["Title"] = "Nueva Compra de Insumos";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h3 class="mb-0"><i class="bi bi-cart-plus"></i> Nueva Compra de Insumos</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="CompraInsumo.fecha" class="form-label">Fecha <span class="text-danger">*</span></label>
+                        <input asp-for="CompraInsumo.fecha" type="datetime-local" class="form-control" />
+                        <span asp-validation-for="CompraInsumo.fecha" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="CompraInsumo.proveedorId" class="form-label">Proveedor</label>
+                        <select asp-for="CompraInsumo.proveedorId" class="form-select">
+                            <option value="">-- Seleccione un proveedor --</option>
+                            @foreach (var proveedor in Model.Proveedores)
+                            {
+                                <option value="@proveedor.Id">@proveedor.nombre</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Porcentaje de Ganancia (%)</label>
+                        <input type="number" id="porcentajeGanancia" name="porcentajeGanancia" class="form-control" value="25" min="0" max="100" step="0.1" />
+                        <div class="form-text">Este porcentaje se aplicará al calcular el precio de venta de cada insumo</div>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>Detalle de la Compra</h5>
+                    <button type="button" id="btnAgregarDetalle" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Agregar Insumo
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 35%;">Insumo</th>
+                                <th style="width: 15%;">Cantidad</th>
+                                <th style="width: 20%;">Costo Unitario</th>
+                                <th style="width: 20%;">Subtotal</th>
+                                <th style="width: 10%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="detalleBody">
+                            <tr class="text-muted">
+                                <td colspan="5" class="text-center">No hay insumos agregados. Haga clic en "Agregar Insumo"</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-info">
+                                <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                <td><strong id="totalCompra">₡0.00</strong></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <input type="hidden" id="detalleJson" name="DetalleJson" value="" />
+                <input type="hidden" asp-for="CompraInsumo.total" id="totalHidden" />
+
+                <hr class="my-4" />
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Guardar Compra
+                    </button>
+                    <a asp-page="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script nonce="@HttpContext.Items["csp-nonce"]">
+        const insumos = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Insumos.Select(i => new { id = i.Id, codigo = i.codigo, nombre = i.nombre, unidad = i.unidad })));
+        let detalleIndex = 0;
+        let detalleItems = [];
+
+        document.getElementById('btnAgregarDetalle').addEventListener('click', function() {
+            agregarLineaDetalle();
+        });
+
+        document.getElementById('detalleBody').addEventListener('click', function(e) {
+            const btnEliminar = e.target.closest('.btn-eliminar-detalle');
+            if (btnEliminar) {
+                const index = parseInt(btnEliminar.dataset.index);
+                eliminarLineaDetalle(index);
+            }
+        });
+
+        document.getElementById('detalleBody').addEventListener('change', function(e) {
+            if (e.target.classList.contains('detalle-cantidad') || e.target.classList.contains('detalle-costo')) {
+                const row = e.target.closest('tr');
+                calcularSubtotal(row);
+            }
+        });
+
+        function agregarLineaDetalle() {
+            const tbody = document.getElementById('detalleBody');
+            const emptyRow = tbody.querySelector('tr.text-muted');
+            if (emptyRow) emptyRow.remove();
+
+            const porcentaje = parseFloat(document.getElementById('porcentajeGanancia').value) || 25;
+
+            const row = document.createElement('tr');
+            row.dataset.index = detalleIndex;
+            row.innerHTML = `
+                <td>
+                    <select class="form-select detalle-insumo" data-index="${detalleIndex}" required>
+                        <option value="">-- Seleccione --</option>
+                        ${insumos.map(i => `<option value="${i.id}">${i.codigo} - ${i.nombre} (${i.unidad})</option>`).join('')}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" class="form-control detalle-cantidad" data-index="${detalleIndex}" 
+                           min="0.01" step="0.01" value="1" required />
+                </td>
+                <td>
+                    <input type="number" class="form-control detalle-costo" data-index="${detalleIndex}" 
+                           min="0" step="0.01" value="0" required />
+                </td>
+                <td class="detalle-subtotal" data-index="${detalleIndex}">₡0.00</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-danger btn-eliminar-detalle" data-index="${detalleIndex}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+
+            detalleItems.push({
+                index: detalleIndex,
+                insumoId: '',
+                cantidad: 1,
+                costoUnitario: 0,
+                subtotal: 0
+            });
+
+            detalleIndex++;
+            calcularTotal();
+        }
+
+        function eliminarLineaDetalle(index) {
+            const row = document.querySelector(`tr[data-index="${index}"]`);
+            if (row) row.remove();
+
+            detalleItems = detalleItems.filter(item => item.index !== index);
+            calcularTotal();
+
+            const tbody = document.getElementById('detalleBody');
+            if (tbody.children.length === 0) {
+                tbody.innerHTML = '<tr class="text-muted"><td colspan="5" class="text-center">No hay insumos agregados</td></tr>';
+            }
+        }
+
+        function calcularSubtotal(row) {
+            const index = parseInt(row.dataset.index);
+            const cantidadInput = row.querySelector('.detalle-cantidad');
+            const costoInput = row.querySelector('.detalle-costo');
+            const insumoSelect = row.querySelector('.detalle-insumo');
+            const subtotalCell = row.querySelector('.detalle-subtotal');
+
+            const cantidad = parseFloat(cantidadInput.value) || 0;
+            const costo = parseFloat(costoInput.value) || 0;
+            const subtotal = cantidad * costo;
+
+            subtotalCell.textContent = '₡' + subtotal.toFixed(2);
+
+            const item = detalleItems.find(i => i.index === index);
+            if (item) {
+                item.insumoId = insumoSelect.value;
+                item.cantidad = cantidad;
+                item.costoUnitario = costo;
+                item.subtotal = subtotal;
+            }
+
+            calcularTotal();
+        }
+
+        function calcularTotal() {
+            const total = detalleItems.reduce((sum, item) => sum + item.subtotal, 0);
+            document.getElementById('totalCompra').textContent = '₡' + total.toFixed(2);
+            document.getElementById('totalHidden').value = total.toFixed(2);
+            
+            const detalleValido = detalleItems.filter(item => item.insumoId && item.cantidad > 0 && item.costoUnitario >= 0);
+            document.getElementById('detalleJson').value = JSON.stringify(detalleValido.map(item => ({
+                insumoId: item.insumoId,
+                cantidad: item.cantidad,
+                costoUnitario: item.costoUnitario,
+                subtotal: item.subtotal
+            })));
+        }
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (detalleItems.length === 0 || detalleItems.every(item => !item.insumoId)) {
+                e.preventDefault();
+                alert('Debe agregar al menos un insumo a la compra');
+                return false;
+            }
+        });
+    </script>
+}

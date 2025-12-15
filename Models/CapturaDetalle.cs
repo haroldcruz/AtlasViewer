@@ -44,4 +44,5 @@ public class CapturaDetalle
  public decimal total { get; set; }
 
  public List<AlistoInsumo> alisto { get; set; } = new();
+ public List<AlistoInsumo> insumos { get; set; } = new(); // Alias para compatibilidad
 }

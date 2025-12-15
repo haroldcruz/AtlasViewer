@@ -1,0 +1,65 @@
+@page
+@model AtlasViewer.Pages.Proveedores.EditModel
+@{
+    ViewData["Title"] = "Editar Proveedor";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0"><i class="bi bi-pencil-square"></i> Editar Proveedor</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" asp-for="Proveedor.Id" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Proveedor.nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                        <input asp-for="Proveedor.nombre" class="form-control" placeholder="Nombre del proveedor" />
+                        <span asp-validation-for="Proveedor.nombre" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Proveedor.telefono" class="form-label">Teléfono</label>
+                        <input asp-for="Proveedor.telefono" class="form-control" placeholder="Ej: +506 1234-5678" />
+                        <span asp-validation-for="Proveedor.telefono" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8 mb-3">
+                        <label asp-for="Proveedor.correo" class="form-label">Correo Electrónico</label>
+                        <input asp-for="Proveedor.correo" type="email" class="form-control" placeholder="correo@ejemplo.com" />
+                        <span asp-validation-for="Proveedor.correo" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="form-check mt-4">
+                            <input asp-for="Proveedor.activo" class="form-check-input" type="checkbox" />
+                            <label asp-for="Proveedor.activo" class="form-check-label">
+                                Activo
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Guardar Cambios
+                    </button>
+                    <a asp-page="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

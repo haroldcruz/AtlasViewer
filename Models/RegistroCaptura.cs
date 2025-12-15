@@ -27,4 +27,6 @@ public class RegistroCaptura
 
  [BsonRepresentation(BsonType.ObjectId)]
  public string? artePescaId { get; set; }
+
+ public List<CapturaDetalle> capturas { get; set; } = new();
 }
