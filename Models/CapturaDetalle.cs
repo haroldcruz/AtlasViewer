@@ -43,6 +43,13 @@ public class CapturaDetalle
  [Range(0, double.MaxValue)]
  public decimal total { get; set; }
 
- public List<AlistoInsumo> alisto { get; set; } = new();
- public List<AlistoInsumo> insumos { get; set; } = new(); // Alias para compatibilidad
+ public List<AlistoInsumo> insumos { get; set; } = new();
+ 
+ // Alias para compatibilidad - apunta a la misma lista
+ [BsonIgnore]
+ public List<AlistoInsumo> alisto 
+ { 
+     get => insumos; 
+     set => insumos = value; 
+ }
 }

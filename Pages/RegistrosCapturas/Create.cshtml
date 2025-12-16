@@ -275,7 +275,8 @@
             const embarcacionesFiltradas = embarcaciones.filter(e => e.pescadorId === pescadorId);
             embarcacionSelect.innerHTML = '<option value="">Seleccione embarcación</option>';
             embarcacionesFiltradas.forEach(e => {
-                embarcacionSelect.innerHTML += `<option value="${e.Id}">${e.matricula || e.nombre}</option>`;
+                const nombreCompleto = e.nombre && e.matricula ? `${e.nombre} - ${e.matricula}` : (e.nombre || e.matricula || 'Sin nombre');
+                embarcacionSelect.innerHTML += `<option value="${e.Id}">${nombreCompleto}</option>`;
             });
             embarcacionSelect.disabled = embarcacionesFiltradas.length === 0;
         }

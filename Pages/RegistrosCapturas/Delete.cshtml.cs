@@ -126,15 +126,19 @@ namespace AtlasViewer.Pages.RegistrosCapturas
                 {
                     foreach (var captura in registroAnterior.capturas)
                     {
-                        if (captura.alisto != null && captura.alisto.Any())
+                        if (captura.insumos != null && captura.insumos.Any())
                         {
-                            foreach (var insumoConsumido in captura.alisto)
+                            foreach (var insumoConsumido in captura.insumos)
                             {
-                                var insumo = await _insumoService.GetByIdAsync(insumoConsumido.insumoId ?? "");
-                                if (insumo != null)
+                                if (!string.IsNullOrEmpty(insumoConsumido.insumoId))
                                 {
-                                    insumo.inventarioActual += insumoConsumido.cantidad;
-                                    await _insumoService.UpdateAsync(insumo.Id!, insumo);
+                                    var insumo = await _insumoService.GetByIdAsync(insumoConsumido.insumoId);
+                                    if (insumo != null)
+                                    {
+                                        // Devolver al inventario la cantidad que se había consumido
+                                        insumo.inventarioActual += insumoConsumido.cantidad;
+                                        await _insumoService.UpdateAsync(insumo.Id!, insumo);
+                                    }
                                 }
                             }
                         }

@@ -278,7 +278,10 @@
             const select = document.getElementById('embarcacionSelect');
             select.disabled = false;
             select.innerHTML = '<option value=\"\">Seleccione embarcación</option>' +
-                embarcacionesDelPescador.map(e => `<option value="${e.id}">${e.nombre} - ${e.matricula}</option>`).join('');
+                embarcacionesDelPescador.map(e => {
+                    const nombreCompleto = e.nombre && e.matricula ? `${e.nombre} - ${e.matricula}` : (e.nombre || e.matricula || 'Sin nombre');
+                    return `<option value="${e.id}">${nombreCompleto}</option>`;
+                }).join('');
             
             if (registroExistente && registroExistente.embarcacionId) {
                 select.value = registroExistente.embarcacionId;
