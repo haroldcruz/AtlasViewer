@@ -43,13 +43,14 @@ public class CapturaDetalle
  [Range(0, double.MaxValue)]
  public decimal total { get; set; }
 
+ // Lista principal de insumos
  public List<AlistoInsumo> insumos { get; set; } = new();
  
- // Alias para compatibilidad - apunta a la misma lista
- [BsonIgnore]
- public List<AlistoInsumo> alisto 
- { 
-     get => insumos; 
-     set => insumos = value; 
- }
+ // Campo legacy - MongoDB puede leerlo pero lo ignoramos al escribir
+ [BsonIgnoreIfDefault]
+ public List<AlistoInsumo> alisto { get; set; } = new();
+
+ // Captura cualquier campo extra (como 'alisto' legacy) sin causar error
+ [BsonExtraElements]
+ public BsonDocument? extraElements { get; set; }
 }

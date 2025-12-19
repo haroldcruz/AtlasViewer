@@ -91,45 +91,6 @@
                                         <td>₡@captura.precioKilo.ToString("N2")</td>
                                         <td>₡@captura.total.ToString("N2")</td>
                                     </tr>
-                                    
-                                    @if (captura.insumos != null && captura.insumos.Any())
-                                    {
-                                        <tr>
-                                            <td colspan="5" class="bg-light">
-                                                <strong>Insumos consumidos para esta especie:</strong>
-                                                <table class="table table-sm table-borderless mt-2 mb-0">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Insumo</th>
-                                                            <th>Cantidad</th>
-                                                            <th>Precio Unitario</th>
-                                                            <th>Subtotal</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach (var insumo in captura.insumos)
-                                                        {
-                                                            <tr>
-                                                                <td>
-                                                                    @if (!string.IsNullOrEmpty(insumo.insumoId) && Model.InsumosDict.ContainsKey(insumo.insumoId))
-                                                                    {
-                                                                        @Model.InsumosDict[insumo.insumoId]
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <span class="text-muted">Insumo no encontrado</span>
-                                                                    }
-                                                                </td>
-                                                                <td>@insumo.cantidad.ToString("N2")</td>
-                                                                <td>₡@insumo.precioUnitario.ToString("N2")</td>
-                                                                <td>₡@insumo.subtotal.ToString("N2")</td>
-                                                            </tr>
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    }
                                 }
                             </tbody>
                             <tfoot>
@@ -142,7 +103,61 @@
                     </div>
                 }
 
-                <!-- Acciones -->
+                <hr />
+
+                <!-- Insumos -->
+                <h4 class="mb-3"><i class="bi bi-box-seam"></i> Insumos Utilizados</h4>
+                @if (Model.RegistroCaptura.insumos == null || !Model.RegistroCaptura.insumos.Any())
+                {
+                    <div class="alert alert-info">No hay insumos registrados para esta jornada.</div>
+                }
+                else
+                {
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>Insumo</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    decimal totalInsumos = 0;
+                                }
+                                @foreach (var insumo in Model.RegistroCaptura.insumos)
+                                {
+                                    totalInsumos += insumo.subtotal;
+                                    <tr>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(insumo.insumoId) && Model.InsumosDict.ContainsKey(insumo.insumoId))
+                                            {
+                                                @Model.InsumosDict[insumo.insumoId]
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Insumo no encontrado</span>
+                                            }
+                                        </td>
+                                        <td>@insumo.cantidad.ToString("N2")</td>
+                                        <td>₡@insumo.precioUnitario.ToString("N2")</td>
+                                        <td>₡@insumo.subtotal.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-warning">
+                                    <th colspan="3" class="text-end">Total Insumos:</th>
+                                    <th>₡@totalInsumos.ToString("N2")</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                }
+
+                <hr />
                 <div class="d-flex gap-2">
                     <a asp-page="Edit" asp-route-id="@Model.RegistroCaptura.Id" class="btn btn-warning">
                         <i class="bi bi-pencil"></i> Editar

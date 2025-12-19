@@ -8,11 +8,45 @@
     <div class="card shadow-sm">
         <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
             <h3 class="mb-0"><i class="bi bi-clipboard-check"></i> Registros de Capturas</h3>
-            <a asp-page="Create" class="btn btn-light">
+            <button type="button" class="btn btn-light" id="btnNuevoRegistro">
                 <i class="bi bi-plus-circle"></i> Nuevo Registro
-            </a>
+            </button>
         </div>
         <div class="card-body">
+            <!-- Formulario de búsqueda -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <form method="get" class="row g-3 form-search">
+                        <div class="col-md-3">
+                            <label class="form-label">Pescador</label>
+                            <input type="text" name="busquedaPescador" class="form-control" value="@Model.BusquedaPescador" placeholder="Nombre del pescador">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Fecha desde</label>
+                            <input type="date" name="busquedaFechaDesde" class="form-control" value="@(Model.BusquedaFechaDesde?.ToString("yyyy-MM-dd"))">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Fecha hasta</label>
+                            <input type="date" name="busquedaFechaHasta" class="form-control" value="@(Model.BusquedaFechaHasta?.ToString("yyyy-MM-dd"))">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                            <a asp-page="Index" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Limpiar
+                            </a>
+                        </div>
+                    </form>
+                    @if (!Model.MostrarTodos && string.IsNullOrWhiteSpace(Model.BusquedaPescador) && !Model.BusquedaFechaDesde.HasValue && !Model.BusquedaFechaHasta.HasValue)
+                    {
+                        <div class="mt-2">
+                            <small class="text-muted">Mostrando los 10 registros más recientes.</small>
+                            <a asp-page="Index" asp-route-mostrarTodos="true" class="btn btn-sm btn-link">Ver todos</a>
+                        </div>
+                    }
+                </div>
+            </div>
             @if (Model.Registros.Count == 0)
             {
                 <div class="alert alert-info">
@@ -107,3 +141,13 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script nonce="@HttpContext.Items["csp-nonce"]">
+        // Agregar event listener al botón
+        document.getElementById('btnNuevoRegistro').addEventListener('click', function() {
+            // Ir directo a crear (sin verificación de borrador porque este formulario no usa persistencia)
+            window.location.href = '/RegistrosCapturas/Create';
+        });
+    </script>
+}

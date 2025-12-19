@@ -1,0 +1,87 @@
+@page
+@model AtlasViewer.Pages.VentasEspecies.DeleteModel
+@{
+    ViewData["Title"] = "Eliminar Venta";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm border-danger">
+        <div class="card-header bg-danger text-white">
+            <h3 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Eliminar Venta</h3>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning" role="alert">
+                <i class="bi bi-exclamation-circle"></i> ¿Está seguro que desea eliminar esta venta?
+                <strong>Esta acción no se puede deshacer y restaurará el inventario de las especies vendidas.</strong>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Consecutivo</label>
+                    <p class="form-control-plaintext">@Model.VentaEspecie.consecutivo</p>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Fecha</label>
+                    <p class="form-control-plaintext">@Model.VentaEspecie.fecha.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Cliente</label>
+                    <p class="form-control-plaintext">@Model.VentaEspecie.cliente</p>
+                </div>
+            </div>
+
+            <h5 class="mb-3">Detalle de Especies</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Especie</th>
+                            <th class="text-end">Cantidad (Kg)</th>
+                            <th class="text-end">Precio Unitario</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var detalle in Model.VentaEspecie.detalle)
+                        {
+                            <tr>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(detalle.especieId) && Model.EspeciesDict.ContainsKey(detalle.especieId))
+                                    {
+                                        <text>@Model.EspeciesDict[detalle.especieId]</text>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic">Especie no encontrada</span>
+                                    }
+                                </td>
+                                <td class="text-end">@detalle.cantidadKg.ToString("N2")</td>
+                                <td class="text-end">₡@detalle.precioUnitario.ToString("N2")</td>
+                                <td class="text-end">₡@detalle.subtotal.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-info">
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                            <td class="text-end"><strong>₡@Model.VentaEspecie.total.ToString("N2")</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <hr class="my-4" />
+
+            <form method="post">
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Confirmar Eliminación
+                    </button>
+                    <a asp-page="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

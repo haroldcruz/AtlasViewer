@@ -29,4 +29,7 @@ public class RegistroCaptura
  public string? artePescaId { get; set; }
 
  public List<CapturaDetalle> capturas { get; set; } = new();
+ 
+ // Insumos a nivel de registro (jornada completa)
+ public List<AlistoInsumo> insumos { get; set; } = new();
 }

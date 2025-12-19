@@ -1,0 +1,229 @@
+@page
+@model AtlasViewer.Pages.VentasEspecies.CreateModel
+@{
+    ViewData["Title"] = "Nueva Venta de Mariscos";
+}
+
+<section class="page-section">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h3 class="mb-0"><i class="bi bi-cart-plus"></i> Nueva Venta de Mariscos</h3>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="VentaEspecie.consecutivo" class="form-label">Consecutivo <span class="text-danger">*</span></label>
+                        <input asp-for="VentaEspecie.consecutivo" class="form-control" readonly />
+                        <span asp-validation-for="VentaEspecie.consecutivo" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="VentaEspecie.fecha" class="form-label">Fecha <span class="text-danger">*</span></label>
+                        <input asp-for="VentaEspecie.fecha" type="datetime-local" class="form-control" />
+                        <span asp-validation-for="VentaEspecie.fecha" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="VentaEspecie.cliente" class="form-label">Cliente <span class="text-danger">*</span></label>
+                        <input asp-for="VentaEspecie.cliente" class="form-control" />
+                        <span asp-validation-for="VentaEspecie.cliente" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>Detalle de la Venta</h5>
+                    <button type="button" id="btnAgregarDetalle" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Agregar Especie
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 35%;">Especie</th>
+                                <th style="width: 15%;">Disponible (Kg)</th>
+                                <th style="width: 15%;">Cantidad (Kg)</th>
+                                <th style="width: 15%;">Precio Unitario</th>
+                                <th style="width: 15%;">Subtotal</th>
+                                <th style="width: 5%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="detalleBody">
+                            <tr class="text-muted">
+                                <td colspan="6" class="text-center">No hay especies agregadas. Haga clic en "Agregar Especie"</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-info">
+                                <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                                <td><strong id="totalVenta">₡0.00</strong></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <input type="hidden" asp-for="VentaEspecie.total" id="totalHidden" />
+
+                <hr class="my-4" />
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Guardar Venta
+                    </button>
+                    <a asp-page="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script nonce="@HttpContext.Items["csp-nonce"]">
+        const especies = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Especies.Select(e => new { id = e.Id, codigo = e.codigo, nombre = e.nombre, inventario = e.inventarioAcumuladoKg, precioVenta = e.precioPromedioVenta, precioCompra = e.precioPromedioCompra })));
+        let detalleIndex = 0;
+
+        document.getElementById('btnAgregarDetalle').addEventListener('click', function() {
+            agregarLineaDetalle();
+        });
+
+        document.getElementById('detalleBody').addEventListener('click', function(e) {
+            const btnEliminar = e.target.closest('.btn-eliminar-detalle');
+            if (btnEliminar) {
+                const index = parseInt(btnEliminar.dataset.index);
+                eliminarLineaDetalle(index);
+            }
+        });
+
+        document.getElementById('detalleBody').addEventListener('change', function(e) {
+            if (e.target.classList.contains('detalle-especie')) {
+                const row = e.target.closest('tr');
+                const especieId = e.target.value;
+                actualizarInventarioDisponible(row, especieId);
+            }
+            if (e.target.classList.contains('detalle-cantidad') || e.target.classList.contains('detalle-precio')) {
+                const row = e.target.closest('tr');
+                calcularSubtotal(row);
+            }
+        });
+
+        // Seleccionar todo el texto al hacer focus en campos numéricos
+        document.getElementById('detalleBody').addEventListener('focus', function(e) {
+            if (e.target.classList.contains('detalle-cantidad') || e.target.classList.contains('detalle-precio')) {
+                e.target.select();
+            }
+        }, true);
+
+        function agregarLineaDetalle() {
+            const tbody = document.getElementById('detalleBody');
+            const emptyRow = tbody.querySelector('tr.text-muted');
+            if (emptyRow) emptyRow.remove();
+
+            const row = document.createElement('tr');
+            row.dataset.index = detalleIndex;
+            row.innerHTML = `
+                <td>
+                    <select class="form-select detalle-especie" name="Detalle[${detalleIndex}].especieId" data-index="${detalleIndex}" required>
+                        <option value="">-- Seleccione --</option>
+                        ${especies.map(e => `<option value="${e.id}">${e.codigo} - ${e.nombre}</option>`).join('')}
+                    </select>
+                </td>
+                <td class="detalle-disponible" data-index="${detalleIndex}">
+                    <span class="badge bg-secondary">0.00</span>
+                </td>
+                <td>
+                    <input type="number" class="form-control detalle-cantidad" name="Detalle[${detalleIndex}].cantidadKg" 
+                           data-index="${detalleIndex}" min="0.01" step="0.01" value="1" required />
+                </td>
+                <td>
+                    <input type="number" class="form-control detalle-precio" name="Detalle[${detalleIndex}].precioUnitario" 
+                           data-index="${detalleIndex}" min="0" step="0.01" value="0" required />
+                </td>
+                <td class="detalle-subtotal" data-index="${detalleIndex}">
+                    <input type="hidden" name="Detalle[${detalleIndex}].subtotal" value="0" />
+                    ₡0.00
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-danger btn-eliminar-detalle" data-index="${detalleIndex}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+            detalleIndex++;
+            calcularTotal();
+        }
+
+        function actualizarInventarioDisponible(row, especieId) {
+            const especie = especies.find(e => e.id === especieId);
+            const disponibleCell = row.querySelector('.detalle-disponible span');
+            const precioInput = row.querySelector('.detalle-precio');
+            const cantidadInput = row.querySelector('.detalle-cantidad');
+
+            if (especie) {
+                disponibleCell.textContent = especie.inventario.toFixed(2);
+                disponibleCell.className = especie.inventario > 0 ? 'badge bg-success' : 'badge bg-danger';
+                
+                // Si el precio de venta es 0, calcular con 20% de ganancia
+                let precioVenta = especie.precioVenta;
+                if (precioVenta === 0 && especie.precioCompra > 0) {
+                    precioVenta = especie.precioCompra * 1.20;
+                }
+                
+                precioInput.value = precioVenta.toFixed(2);
+                cantidadInput.max = especie.inventario;
+            } else {
+                disponibleCell.textContent = '0.00';
+                disponibleCell.className = 'badge bg-secondary';
+                precioInput.value = '0';
+                cantidadInput.max = '';
+            }
+            calcularSubtotal(row);
+        }
+
+        function eliminarLineaDetalle(index) {
+            const row = document.querySelector(`tr[data-index="${index}"]`);
+            if (row) {
+                row.remove();
+                const tbody = document.getElementById('detalleBody');
+                if (tbody.children.length === 0) {
+                    tbody.innerHTML = '<tr class="text-muted"><td colspan="6" class="text-center">No hay especies agregadas. Haga clic en "Agregar Especie"</td></tr>';
+                }
+                calcularTotal();
+            }
+        }
+
+        function calcularSubtotal(row) {
+            const index = row.dataset.index;
+            const cantidadInput = row.querySelector('.detalle-cantidad');
+            const precioInput = row.querySelector('.detalle-precio');
+            const subtotalCell = row.querySelector('.detalle-subtotal');
+            const subtotalHidden = row.querySelector('input[type="hidden"]');
+
+            const cantidad = parseFloat(cantidadInput.value) || 0;
+            const precio = parseFloat(precioInput.value) || 0;
+            const subtotal = cantidad * precio;
+
+            subtotalCell.innerHTML = `<input type="hidden" name="Detalle[${index}].subtotal" value="${subtotal.toFixed(2)}" />₡${subtotal.toFixed(2)}`;
+            calcularTotal();
+        }
+
+        function calcularTotal() {
+            let total = 0;
+            document.querySelectorAll('.detalle-subtotal input[type="hidden"]').forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            document.getElementById('totalVenta').textContent = '₡' + total.toFixed(2);
+            document.getElementById('totalHidden').value = total.toFixed(2);
+        }
+    </script>
+}

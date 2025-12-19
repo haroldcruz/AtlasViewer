@@ -41,7 +41,10 @@
                 }
                 formData[name] = selected;
             } else if (type !== 'submit' && type !== 'button' && type !== 'file') {
-                formData[name] = element.value;
+                // Solo guardar valores no vacíos para evitar problemas con parsing numérico
+                if (element.value !== '') {
+                    formData[name] = element.value;
+                }
             }
         }
 
@@ -202,11 +205,12 @@
             }
         });
 
-        // Agregar botón si hay datos restaurados
-        if (restored && form.style.position !== 'relative') {
-            form.style.position = 'relative';
-            form.insertBefore(clearButton, form.firstChild);
-        }
+        // No mostrar botón de limpiar - mantenerlo discreto
+        // El usuario puede usar Ctrl+R para refrescar si necesita limpiar
+        // if (restored && form.style.position !== 'relative') {
+        //     form.style.position = 'relative';
+        //     form.insertBefore(clearButton, form.firstChild);
+        // }
     }
 
     // Auto-inicializar todos los formularios al cargar

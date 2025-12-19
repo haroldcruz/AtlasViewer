@@ -15,6 +15,9 @@ namespace AtlasViewer.Pages.RegistrosCapturas
         private readonly IArtePescaService _artePescaService;
         private readonly IEspecieService _especieService;
         private readonly IInsumoService _insumoService;
+        private readonly IMonitoreoBiologicoService _monitoreoService;
+        private readonly IPescaIncidentalService _incidentalService;
+        private readonly IPescaFantasmaService _fantasmaService;
 
         public EditModel(
             IRegistroCapturaService registroCapturaService,
@@ -23,7 +26,10 @@ namespace AtlasViewer.Pages.RegistrosCapturas
             ISitioPescaService sitioPescaService,
             IArtePescaService artePescaService,
             IEspecieService especieService,
-            IInsumoService insumoService)
+            IInsumoService insumoService,
+            IMonitoreoBiologicoService monitoreoService,
+            IPescaIncidentalService incidentalService,
+            IPescaFantasmaService fantasmaService)
         {
             _registroCapturaService = registroCapturaService;
             _pescadorService = pescadorService;
@@ -32,6 +38,9 @@ namespace AtlasViewer.Pages.RegistrosCapturas
             _artePescaService = artePescaService;
             _especieService = especieService;
             _insumoService = insumoService;
+            _monitoreoService = monitoreoService;
+            _incidentalService = incidentalService;
+            _fantasmaService = fantasmaService;
         }
 
         [BindProperty]
@@ -46,6 +55,12 @@ namespace AtlasViewer.Pages.RegistrosCapturas
         public List<Models.ArtePesca> ArtesPesca { get; set; } = new List<Models.ArtePesca>();
         public List<Especie> Especies { get; set; } = new List<Especie>();
         public List<Insumo> Insumos { get; set; } = new List<Insumo>();
+        public List<MonitoreoBiologico> MonitoreosExistentes { get; set; } = new List<MonitoreoBiologico>();
+        public string MonitoreosJson { get; set; } = string.Empty;
+        public List<PescaIncidental> IncidentalesExistentes { get; set; } = new List<PescaIncidental>();
+        public string IncidentalesJson { get; set; } = string.Empty;
+        public List<PescaFantasma> FantasmasExistentes { get; set; } = new List<PescaFantasma>();
+        public string FantasmasJson { get; set; } = string.Empty;
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -59,6 +74,27 @@ namespace AtlasViewer.Pages.RegistrosCapturas
             if (RegistroCaptura == null)
             {
                 return NotFound();
+            }
+
+            // Cargar monitoreos biológicos existentes
+            MonitoreosExistentes = await _monitoreoService.GetByRegistroAsync(id);
+            if (MonitoreosExistentes.Any())
+            {
+                MonitoreosJson = JsonSerializer.Serialize(MonitoreosExistentes);
+            }
+
+            // Cargar pesca incidental existente
+            IncidentalesExistentes = await _incidentalService.GetByRegistroAsync(id);
+            if (IncidentalesExistentes.Any())
+            {
+                IncidentalesJson = JsonSerializer.Serialize(IncidentalesExistentes);
+            }
+
+            // Cargar pesca fantasma existente
+            FantasmasExistentes = await _fantasmaService.GetByRegistroAsync(id);
+            if (FantasmasExistentes.Any())
+            {
+                FantasmasJson = JsonSerializer.Serialize(FantasmasExistentes);
             }
 
             await CargarCatalogosAsync();
@@ -201,6 +237,106 @@ namespace AtlasViewer.Pages.RegistrosCapturas
                 else
                 {
                     AlertService.Success(TempData, mensaje);
+                }
+
+                // Eliminar monitoreos anteriores
+                var monitoreosAnteriores = await _monitoreoService.GetByRegistroAsync(RegistroCaptura.Id!);
+                foreach (var monitoreoAnterior in monitoreosAnteriores)
+                {
+                    await _monitoreoService.DeleteAsync(monitoreoAnterior.Id!);
+                }
+
+                // Procesar Monitoreo Biológico (opcional)
+                var monitoreoKeys = Request.Form.Keys.Where(k => k.StartsWith("Monitoreo[") && k.EndsWith("].especieId")).ToList();
+                foreach (var key in monitoreoKeys)
+                {
+                    var indexStr = key.Replace("Monitoreo[", "").Replace("].especieId", "");
+                    var especieId = Request.Form[$"Monitoreo[{indexStr}].especieId"].ToString();
+                    
+                    if (!string.IsNullOrEmpty(especieId))
+                    {
+                        var tallaCmStr = Request.Form[$"Monitoreo[{indexStr}].tallaCm"].ToString();
+                        var pesoKgStr = Request.Form[$"Monitoreo[{indexStr}].pesoKg"].ToString();
+                        
+                        // Solo guardar si tiene al menos talla
+                        if (!string.IsNullOrWhiteSpace(tallaCmStr))
+                        {
+                            var monitoreo = new MonitoreoBiologico
+                            {
+                                registroId = RegistroCaptura.Id,
+                                especieId = especieId,
+                                tallaCm = double.Parse(tallaCmStr),
+                                pesoKg = string.IsNullOrWhiteSpace(pesoKgStr) ? 0 : double.Parse(pesoKgStr),
+                                sexo = Request.Form[$"Monitoreo[{indexStr}].sexo"].ToString() ?? "",
+                                madurez = Request.Form[$"Monitoreo[{indexStr}].madurez"].ToString() ?? "",
+                                eviscerado = Request.Form[$"Monitoreo[{indexStr}].eviscerado"].ToString() == "true",
+                                observaciones = Request.Form[$"Monitoreo[{indexStr}].observaciones"].ToString() ?? ""
+                            };
+                            await _monitoreoService.CreateAsync(monitoreo);
+                        }
+                    }
+                }
+
+                // Eliminar pesca incidental anterior
+                var incidentalesAnteriores = await _incidentalService.GetByRegistroAsync(RegistroCaptura.Id!);
+                foreach (var incidentalAnterior in incidentalesAnteriores)
+                {
+                    await _incidentalService.DeleteAsync(incidentalAnterior.Id!);
+                }
+
+                // Procesar Pesca Incidental (opcional)
+                var incidentalKeys = Request.Form.Keys.Where(k => k.StartsWith("Incidental[") && k.EndsWith("].especieId")).ToList();
+                foreach (var key in incidentalKeys)
+                {
+                    var indexStr = key.Replace("Incidental[", "").Replace("].especieId", "");
+                    var especieId = Request.Form[$"Incidental[{indexStr}].especieId"].ToString();
+                    
+                    if (!string.IsNullOrEmpty(especieId))
+                    {
+                        var individuosStr = Request.Form[$"Incidental[{indexStr}].individuos"].ToString();
+                        var pesoKgStr = Request.Form[$"Incidental[{indexStr}].pesoTotalKg"].ToString();
+                        
+                        // Solo guardar si tiene individuos o peso
+                        if (!string.IsNullOrWhiteSpace(individuosStr) || !string.IsNullOrWhiteSpace(pesoKgStr))
+                        {
+                            var incidental = new PescaIncidental
+                            {
+                                registroId = RegistroCaptura.Id,
+                                especieId = especieId,
+                                individuos = string.IsNullOrWhiteSpace(individuosStr) ? 0 : int.Parse(individuosStr),
+                                pesoTotalKg = string.IsNullOrWhiteSpace(pesoKgStr) ? 0 : double.Parse(pesoKgStr)
+                            };
+                            await _incidentalService.CreateAsync(incidental);
+                        }
+                    }
+                }
+
+                // Eliminar pesca fantasma anterior
+                var fantasmasAnteriores = await _fantasmaService.GetByRegistroAsync(RegistroCaptura.Id!);
+                foreach (var fantasmaAnterior in fantasmasAnteriores)
+                {
+                    await _fantasmaService.DeleteAsync(fantasmaAnterior.Id!);
+                }
+
+                // Procesar Pesca Fantasma (opcional)
+                var fantasmaKeys = Request.Form.Keys.Where(k => k.StartsWith("Fantasma[") && k.EndsWith("].tipoArte")).ToList();
+                foreach (var key in fantasmaKeys)
+                {
+                    var indexStr = key.Replace("Fantasma[", "").Replace("].tipoArte", "");
+                    var tipoArte = Request.Form[$"Fantasma[{indexStr}].tipoArte"].ToString();
+                    
+                    if (!string.IsNullOrWhiteSpace(tipoArte))
+                    {
+                        var fantasma = new PescaFantasma
+                        {
+                            registroId = RegistroCaptura.Id,
+                            tipoArte = tipoArte,
+                            especiesAfectadas = Request.Form[$"Fantasma[{indexStr}].especiesAfectadas"].ToString() ?? "",
+                            ubicacion = Request.Form[$"Fantasma[{indexStr}].ubicacion"].ToString() ?? "",
+                            liberacion = Request.Form[$"Fantasma[{indexStr}].liberacion"].ToString() == "true"
+                        };
+                        await _fantasmaService.CreateAsync(fantasma);
+                    }
                 }
 
                 return RedirectToPage("Index");

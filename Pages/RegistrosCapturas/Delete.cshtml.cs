@@ -126,19 +126,23 @@ namespace AtlasViewer.Pages.RegistrosCapturas
                 {
                     foreach (var captura in registroAnterior.capturas)
                     {
+                        // Combinar ambas listas (legacy alisto + nueva insumos)
+                        var listaInsumos = new List<AlistoInsumo>();
+                        if (captura.alisto != null && captura.alisto.Any())
+                            listaInsumos.AddRange(captura.alisto);
                         if (captura.insumos != null && captura.insumos.Any())
+                            listaInsumos.AddRange(captura.insumos);
+                        
+                        foreach (var insumoConsumido in listaInsumos)
                         {
-                            foreach (var insumoConsumido in captura.insumos)
+                            if (!string.IsNullOrEmpty(insumoConsumido.insumoId))
                             {
-                                if (!string.IsNullOrEmpty(insumoConsumido.insumoId))
+                                var insumo = await _insumoService.GetByIdAsync(insumoConsumido.insumoId);
+                                if (insumo != null)
                                 {
-                                    var insumo = await _insumoService.GetByIdAsync(insumoConsumido.insumoId);
-                                    if (insumo != null)
-                                    {
-                                        // Devolver al inventario la cantidad que se había consumido
-                                        insumo.inventarioActual += insumoConsumido.cantidad;
-                                        await _insumoService.UpdateAsync(insumo.Id!, insumo);
-                                    }
+                                    // Devolver al inventario la cantidad que se había consumido
+                                    insumo.inventarioActual += insumoConsumido.cantidad;
+                                    await _insumoService.UpdateAsync(insumo.Id!, insumo);
                                 }
                             }
                         }

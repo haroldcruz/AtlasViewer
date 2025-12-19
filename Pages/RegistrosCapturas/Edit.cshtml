@@ -19,7 +19,7 @@
             }
             else
             {
-                <form method="post" id="formEditRegistro">
+                <form method="post" id="formEditRegistro" class="no-persistence">
                     <input type="hidden" asp-for="RegistroCaptura.Id" />
                     
                     <!-- Datos de Cabecera -->
@@ -155,6 +155,128 @@
                         </div>
                     </div>
 
+                    <!-- Secciones Opcionales -->
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-toggle-seccion="monitoreoBiologico">
+                            <i class="bi bi-clipboard-data"></i> Monitoreo Biológico
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-toggle-seccion="pescaIncidental">
+                            <i class="bi bi-exclamation-triangle"></i> Pesca Incidental/Acompañante
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle-seccion="pescaFantasma">
+                            <i class="bi bi-trash"></i> Pesca Fantasma
+                        </button>
+                    </div>
+
+                    <!-- Monitoreo Biológico -->
+                    <div id="monitoreoBiologico" class="card mb-3 d-none">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">Monitoreo Biológico</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3"><small>Registre datos biológicos de muestras individuales de especies capturadas</small></p>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Especie</th>
+                                            <th>Talla (cm)</th>
+                                            <th>Peso (kg)</th>
+                                            <th>Sexo</th>
+                                            <th>Madurez</th>
+                                            <th>Eviscerado</th>
+                                            <th>Observaciones</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="monitoreoBiologicoBody">
+                                        <!-- Líneas dinámicas -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="btnAgregarMonitoreo">
+                                <i class="bi bi-plus-circle"></i> Agregar muestra
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pesca Incidental -->
+                    <div id="pescaIncidental" class="card mb-3 d-none">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">Pesca Incidental / Acompañante</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3"><small>Registre especies capturadas incidentalmente (fauna acompañante)</small></p>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Especie / Nombre común</th>
+                                            <th># de individuos</th>
+                                            <th>Peso total (Kg)</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pescaIncidentalBody">
+                                        <!-- Líneas dinámicas -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-warning" id="btnAgregarIncidental">
+                                <i class="bi bi-plus-circle"></i> Agregar especie
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pesca Fantasma -->
+                    <div id="pescaFantasma" class="card mb-3 d-none">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0">Artes de Pesca Fantasma</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3"><small>Registre artes de pesca perdidos o abandonados encontrados</small></p>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Tipo de arte</th>
+                                            <th>Especies afectadas</th>
+                                            <th>Ubicación</th>
+                                            <th>Liberación</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pescaFantasmaBody">
+                                        <!-- Líneas dinámicas -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger" id="btnAgregarFantasma">
+                                <i class="bi bi-plus-circle"></i> Agregar registro
+                            </button>
+
+                            <!-- Datalists para autocompletar -->
+                            <datalist id="artesDatalist">
+                                @foreach (var arte in Model.ArtesPesca)
+                                {
+                                    <option value="@arte.nombre" />
+                                }
+                            </datalist>
+                            <datalist id="especiesDatalist">
+                                @foreach (var especie in Model.Especies)
+                                {
+                                    <option value="@especie.nombre" />
+                                }
+                            </datalist>
+                            <datalist id="sitiosDatalist">
+                                @foreach (var sitio in Model.SitiosPesca)
+                                {
+                                    <option value="@sitio.nombre" />
+                                }
+                            </datalist>
+                        </div>
+                    </div>
+
                     <!-- Campos ocultos para enviar datos -->
                     <input type="hidden" name="CapturaJson" id="capturaJson" />
 
@@ -177,6 +299,21 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script nonce="@HttpContext.Items["csp-nonce"]">
+        // Prevenir submit con Enter en campos del formulario
+        document.getElementById('formEditRegistro').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && e.target.type !== 'submit') {
+                e.preventDefault();
+                // Mover foco al siguiente campo
+                const form = e.target.form;
+                const focusable = Array.from(form.querySelectorAll('input:not([type=hidden]), select, textarea, button'))
+                    .filter(el => !el.disabled && el.offsetParent !== null);
+                const index = focusable.indexOf(e.target);
+                if (index > -1 && index < focusable.length - 1) {
+                    focusable[index + 1].focus();
+                }
+            }
+        });
+
         const especies = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Especies.Select(e => new { id = e.Id, nombre = e.nombre }).ToList()));
         const insumos = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Insumos.Select(i => new { id = i.Id, nombre = i.nombre, unidad = i.unidad, precio = i.precioPromedioVenta }).ToList()));
         const pescadores = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Pescadores.Select(p => new { id = p.Id, nombre = p.nombre, identificacion = p.identificacion }).ToList()));
@@ -376,6 +513,8 @@
 
             lineaCapturaIndex++;
             actualizarSelectEspecieInsumo();
+            actualizarEstadoBotonMonitoreo();
+            actualizarDropdownsMonitoreo();
         }
 
         // Event delegation para campos de captura
@@ -427,6 +566,8 @@
                 lineasCaptura = lineasCaptura.filter(l => l.index !== index);
                 calcularTotalCaptura();
                 actualizarSelectEspecieInsumo();
+                actualizarEstadoBotonMonitoreo();
+                actualizarDropdownsMonitoreo();
             }
         });
 
@@ -608,5 +749,281 @@
 
             document.getElementById('capturaJson').value = JSON.stringify(capturaData);
         });
+
+        // Monitoreo Biológico
+        let contadorMonitoreo = 0;
+
+        function actualizarEstadoBotonMonitoreo() {
+            const btnMonitoreo = document.getElementById('btnAgregarMonitoreo');
+            const hayCapturas = lineasCaptura.length > 0;
+            btnMonitoreo.disabled = !hayCapturas;
+            if (!hayCapturas) {
+                btnMonitoreo.title = 'Primero agregue capturas para habilitar monitoreo';
+            } else {
+                btnMonitoreo.title = '';
+            }
+        }
+
+        function obtenerEspeciesCapturadas() {
+            return lineasCaptura.map(l => ({
+                id: l.especieId,
+                nombre: especies.find(e => e.id === l.especieId)?.nombre || 'Desconocida'
+            }));
+        }
+
+        function actualizarDropdownsMonitoreo() {
+            const especiesCapturadas = obtenerEspeciesCapturadas();
+            const selects = document.querySelectorAll('#monitoreoBiologicoBody .especie-monitoreo');
+            
+            selects.forEach(select => {
+                const valorActual = select.value;
+                select.innerHTML = '<option value="">Seleccione...</option>' +
+                    especiesCapturadas.map(e => `<option value="${e.id}" ${e.id === valorActual ? 'selected' : ''}>${e.nombre}</option>`).join('');
+            });
+        }
+
+        function agregarLineaMonitoreo() {
+            contadorMonitoreo++;
+            const especiesCapturadas = obtenerEspeciesCapturadas();
+
+            const row = `
+                <tr data-index="${contadorMonitoreo}">
+                    <td>
+                        <select class="form-select form-select-sm especie-monitoreo" name="Monitoreo[${contadorMonitoreo}].especieId" required>
+                            <option value="">Seleccione...</option>
+                            ${especiesCapturadas.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-control form-control-sm" name="Monitoreo[${contadorMonitoreo}].tallaCm" min="0" step="0.1" placeholder="cm" required /></td>
+                    <td><input type="number" class="form-control form-control-sm" name="Monitoreo[${contadorMonitoreo}].pesoKg" min="0" step="0.01" placeholder="kg" /></td>
+                    <td>
+                        <select class="form-select form-select-sm" name="Monitoreo[${contadorMonitoreo}].sexo">
+                            <option value="">-</option>
+                            <option value="H">Hembra</option>
+                            <option value="M">Macho</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select form-select-sm" name="Monitoreo[${contadorMonitoreo}].madurez">
+                            <option value="">-</option>
+                            <option value="I">Inmaduro</option>
+                            <option value="M">Maduro</option>
+                            <option value="D">Desovada</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="Monitoreo[${contadorMonitoreo}].eviscerado" value="true" />
+                        </div>
+                    </td>
+                    <td><input type="text" class="form-control form-control-sm" name="Monitoreo[${contadorMonitoreo}].observaciones" maxlength="500" /></td>
+                    <td><button type="button" class="btn btn-sm btn-danger btn-eliminar-monitoreo" data-index="${contadorMonitoreo}">
+                        <i class="bi bi-trash"></i></button></td>
+                </tr>
+            `;
+            document.getElementById('monitoreoBiologicoBody').insertAdjacentHTML('beforeend', row);
+        }
+
+        // Contador para Pesca Incidental
+        let contadorIncidental = 0;
+
+        function agregarLineaIncidental() {
+            contadorIncidental++;
+            const row = `
+                <tr data-index="${contadorIncidental}">
+                    <td>
+                        <select class="form-select form-select-sm" name="Incidental[${contadorIncidental}].especieId" required>
+                            <option value="">Seleccione especie...</option>
+                            ${especies.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-control form-control-sm" name="Incidental[${contadorIncidental}].individuos" min="0" step="1" placeholder="0" required /></td>
+                    <td><input type="number" class="form-control form-control-sm" name="Incidental[${contadorIncidental}].pesoTotalKg" min="0" step="0.01" placeholder="0.00" required /></td>
+                    <td><button type="button" class="btn btn-sm btn-danger btn-eliminar-incidental" data-index="${contadorIncidental}">
+                        <i class="bi bi-trash"></i></button></td>
+                </tr>
+            `;
+            document.getElementById('pescaIncidentalBody').insertAdjacentHTML('beforeend', row);
+        }
+
+        // Contador para Pesca Fantasma
+        let contadorFantasma = 0;
+
+        function agregarLineaFantasma() {
+            contadorFantasma++;
+            const row = `
+                <tr data-index="${contadorFantasma}">
+                    <td><input type="text" class="form-control form-control-sm" name="Fantasma[${contadorFantasma}].tipoArte" list="artesDatalist" maxlength="200" placeholder="Ej: Red agallera, palangre..." required /></td>
+                    <td><input type="text" class="form-control form-control-sm" name="Fantasma[${contadorFantasma}].especiesAfectadas" list="especiesDatalist" maxlength="500" placeholder="Separadas por comas" /></td>
+                    <td><input type="text" class="form-control form-control-sm" name="Fantasma[${contadorFantasma}].ubicacion" list="sitiosDatalist" maxlength="500" placeholder="Ubicación específica" /></td>
+                    <td>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="Fantasma[${contadorFantasma}].liberacion" value="true" />
+                            <label class="form-check-label">Sí</label>
+                        </div>
+                    </td>
+                    <td><button type="button" class="btn btn-sm btn-danger btn-eliminar-fantasma" data-index="${contadorFantasma}">
+                        <i class="bi bi-trash"></i></button></td>
+                </tr>
+            `;
+            document.getElementById('pescaFantasmaBody').insertAdjacentHTML('beforeend', row);
+        }
+
+        document.getElementById('btnAgregarMonitoreo').addEventListener('click', agregarLineaMonitoreo);
+
+        document.getElementById('monitoreoBiologicoBody').addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-eliminar-monitoreo');
+            if (btn) {
+                const index = btn.getAttribute('data-index');
+                document.querySelector(`#monitoreoBiologicoBody tr[data-index="${index}"]`).remove();
+            }
+        });
+
+        document.getElementById('btnAgregarIncidental').addEventListener('click', agregarLineaIncidental);
+
+        document.getElementById('pescaIncidentalBody').addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-eliminar-incidental');
+            if (btn) {
+                const index = btn.getAttribute('data-index');
+                document.querySelector(`#pescaIncidentalBody tr[data-index="${index}"]`).remove();
+            }
+        });
+
+        document.getElementById('btnAgregarFantasma').addEventListener('click', agregarLineaFantasma);
+
+        document.getElementById('pescaFantasmaBody').addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-eliminar-fantasma');
+            if (btn) {
+                const index = btn.getAttribute('data-index');
+                document.querySelector(`#pescaFantasmaBody tr[data-index="${index}"]`).remove();
+            }
+        });
+
+        // Toggle secciones opcionales
+        document.querySelectorAll('[data-toggle-seccion]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const seccionId = this.getAttribute('data-toggle-seccion');
+                const seccion = document.getElementById(seccionId);
+                seccion.classList.toggle('d-none');
+            });
+        });
+
+        // Cargar monitoreos existentes
+        const monitoreosJson = '@Html.Raw(Model.MonitoreosJson)';
+        if (monitoreosJson) {
+            try {
+                const monitoreosExistentes = JSON.parse(monitoreosJson);
+                monitoreosExistentes.forEach(monitoreo => {
+                    contadorMonitoreo++;
+                    
+                    // Buscar el nombre de la especie
+                    const especie = especies.find(e => e.id === monitoreo.especieId);
+                    const especieNombre = especie ? especie.nombre : 'Desconocida';
+                    
+                    const row = `
+                        <tr data-index="${contadorMonitoreo}">
+                            <td>
+                                <select class="form-select form-select-sm" name="Monitoreo[${contadorMonitoreo}].especieId" required>
+                                    <option value="${monitoreo.especieId}" selected>${especieNombre}</option>
+                                </select>
+                            </td>
+                            <td><input type="number" class="form-control form-control-sm" name="Monitoreo[${contadorMonitoreo}].tallaCm" min="0" step="0.1" placeholder="cm" value="${monitoreo.tallaCm || ''}" required /></td>
+                            <td><input type="number" class="form-control form-control-sm" name="Monitoreo[${contadorMonitoreo}].pesoKg" min="0" step="0.01" placeholder="kg" value="${monitoreo.pesoKg || ''}" /></td>
+                            <td>
+                                <select class="form-select form-select-sm" name="Monitoreo[${contadorMonitoreo}].sexo">
+                                    <option value="">-</option>
+                                    <option value="H" ${monitoreo.sexo === 'H' ? 'selected' : ''}>Hembra</option>
+                                    <option value="M" ${monitoreo.sexo === 'M' ? 'selected' : ''}>Macho</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-select form-select-sm" name="Monitoreo[${contadorMonitoreo}].madurez">
+                                    <option value="">-</option>
+                                    <option value="I" ${monitoreo.madurez === 'I' ? 'selected' : ''}>Inmaduro</option>
+                                    <option value="M" ${monitoreo.madurez === 'M' ? 'selected' : ''}>Maduro</option>
+                                    <option value="D" ${monitoreo.madurez === 'D' ? 'selected' : ''}>Desovada</option>
+                                </select>
+                            </td>
+                            <td>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="Monitoreo[${contadorMonitoreo}].eviscerado" value="true" ${monitoreo.eviscerado ? 'checked' : ''} />
+                                </div>
+                            </td>
+                            <td><input type="text" class="form-control form-control-sm" name="Monitoreo[${contadorMonitoreo}].observaciones" maxlength="500" value="${monitoreo.observaciones || ''}" /></td>
+                            <td><button type="button" class="btn btn-sm btn-danger btn-eliminar-monitoreo" data-index="${contadorMonitoreo}">
+                                <i class="bi bi-trash"></i></button></td>
+                        </tr>
+                    `;
+                    document.getElementById('monitoreoBiologicoBody').insertAdjacentHTML('beforeend', row);
+                });
+                
+                // Actualizar dropdowns después de cargar los existentes
+                actualizarDropdownsMonitoreo();
+            } catch (e) {
+                console.error('Error al cargar monitoreos existentes:', e);
+            }
+        }
+
+        // Cargar pesca incidental existente
+        const incidentalesJson = '@Html.Raw(Model.IncidentalesJson)';
+        if (incidentalesJson) {
+            try {
+                const incidentalesExistentes = JSON.parse(incidentalesJson);
+                incidentalesExistentes.forEach(incidental => {
+                    contadorIncidental++;
+                    
+                    // Buscar el nombre de la especie
+                    const especie = especies.find(e => e.id === incidental.especieId);
+                    const especieNombre = especie ? especie.nombre : 'Desconocida';
+                    
+                    const row = `
+                        <tr data-index="${contadorIncidental}">
+                            <td>
+                                <select class="form-select form-select-sm" name="Incidental[${contadorIncidental}].especieId" required>
+                                    <option value="${incidental.especieId}" selected>${especieNombre}</option>
+                                </select>
+                            </td>
+                            <td><input type="number" class="form-control form-control-sm" name="Incidental[${contadorIncidental}].individuos" min="0" step="1" value="${incidental.individuos || 0}" required /></td>
+                            <td><input type="number" class="form-control form-control-sm" name="Incidental[${contadorIncidental}].pesoTotalKg" min="0" step="0.01" value="${incidental.pesoTotalKg || 0}" required /></td>
+                            <td><button type="button" class="btn btn-sm btn-danger btn-eliminar-incidental" data-index="${contadorIncidental}">
+                                <i class="bi bi-trash"></i></button></td>
+                        </tr>
+                    `;
+                    document.getElementById('pescaIncidentalBody').insertAdjacentHTML('beforeend', row);
+                });
+            } catch (e) {
+                console.error('Error al cargar pesca incidental existente:', e);
+            }
+        }
+
+        // Cargar pesca fantasma existente
+        const fantasmasJson = '@Html.Raw(Model.FantasmasJson)';
+        if (fantasmasJson) {
+            try {
+                const fantasmasExistentes = JSON.parse(fantasmasJson);
+                fantasmasExistentes.forEach(fantasma => {
+                    contadorFantasma++;
+                    
+                    const row = `
+                        <tr data-index="${contadorFantasma}">
+                            <td><input type="text" class="form-control form-control-sm" name="Fantasma[${contadorFantasma}].tipoArte" list="artesDatalist" maxlength="200" value="${fantasma.tipoArte || ''}" required /></td>
+                            <td><input type="text" class="form-control form-control-sm" name="Fantasma[${contadorFantasma}].especiesAfectadas" list="especiesDatalist" maxlength="500" value="${fantasma.especiesAfectadas || ''}" /></td>
+                            <td><input type="text" class="form-control form-control-sm" name="Fantasma[${contadorFantasma}].ubicacion" list="sitiosDatalist" maxlength="500" value="${fantasma.ubicacion || ''}" /></td>
+                            <td>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="Fantasma[${contadorFantasma}].liberacion" value="true" ${fantasma.liberacion ? 'checked' : ''} />
+                                    <label class="form-check-label">Sí</label>
+                                </div>
+                            </td>
+                            <td><button type="button" class="btn btn-sm btn-danger btn-eliminar-fantasma" data-index="${contadorFantasma}">
+                                <i class="bi bi-trash"></i></button></td>
+                        </tr>
+                    `;
+                    document.getElementById('pescaFantasmaBody').insertAdjacentHTML('beforeend', row);
+                });
+            } catch (e) {
+                console.error('Error al cargar pesca fantasma existente:', e);
+            }
+        }
     </script>
 }

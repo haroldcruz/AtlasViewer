@@ -55,27 +55,49 @@
  <nav class="nav flex-column">
  @if (User?.Identity?.IsAuthenticated ?? false)
  {
- <a class="nav-link" asp-page="/Usuarios/Index">Usuarios</a>
-				@if (User.IsInRole("Administrador") || User.IsInRole("Editor"))
-				{
-					<a class="nav-link" asp-page="/Pescadores/Index">Pescadores</a>
-					<a class="nav-link" asp-page="/Embarcaciones/Index">Embarcaciones</a>
-					<a class="nav-link" asp-page="/Especies/Index">Especies</a>
-					<a class="nav-link" asp-page="/ArtePesca/Index">Artes de Pesca</a>
-					<a class="nav-link" asp-page="/SitiosPesca/Index">Sitios de Pesca</a>
-					<a class="nav-link" asp-page="/Insumos/Index">Insumos</a>
-					<a class="nav-link" asp-page="/Proveedores/Index">Proveedores</a>
-					<a class="nav-link" asp-page="/ComprasInsumos/Index">Compras de Insumos</a>
-					<a class="nav-link" asp-page="/RegistrosCapturas/Index">Registros de Capturas</a>
-				}
+ <!-- Administración -->
  @if (User.IsInRole("Administrador"))
  {
- <a class="nav-link" asp-page="/Admin/Index">Panel Administración</a>
- <a class="nav-link" asp-page="/Roles/Index">Roles</a>
- <a class="nav-link" asp-page="/Tools/Seed">Seed (Dev)</a>
+ <div class="nav-section-title">ADMINISTRACIÓN</div>
+ <a class="nav-link" asp-page="/Usuarios/Index"><i class="bi bi-people"></i> Usuarios</a>
+ <a class="nav-link" asp-page="/Roles/Index"><i class="bi bi-shield-check"></i> Roles</a>
+ <a class="nav-link" asp-page="/Especies/Index"><i class="bi bi-table"></i> Especies</a>
+ <a class="nav-link" asp-page="/Pescadores/Index"><i class="bi bi-person"></i> Pescadores</a>
+ <a class="nav-link" asp-page="/Embarcaciones/Index"><i class="bi bi-water"></i> Embarcaciones</a>
+ <a class="nav-link" asp-page="/ArtePesca/Index"><i class="bi bi-grid-3x3"></i> Artes de Pesca</a>
+ <a class="nav-link" asp-page="/SitiosPesca/Index"><i class="bi bi-geo-alt"></i> Lugares de Pesca</a>
  }
- <a class="nav-link" asp-page="/Account/ChangePassword">Cambiar contraseña</a>
- <a class="nav-link" asp-page="/Account/Profile">Mi perfil</a>
+
+ <!-- Insumos -->
+ @if (User.IsInRole("Administrador") || User.IsInRole("Editor"))
+ {
+ <div class="nav-section-title mt-3">INSUMOS</div>
+ <a class="nav-link" asp-page="/Insumos/Index"><i class="bi bi-box-seam"></i> Insumos</a>
+ <a class="nav-link" asp-page="/Proveedores/Index"><i class="bi bi-truck"></i> Proveedores</a>
+ <a class="nav-link" asp-page="/ComprasInsumos/Index"><i class="bi bi-cart-plus"></i> Compra de Insumos</a>
+ <a class="nav-link text-muted"><i class="bi bi-cash-coin"></i> Venta de Insumos <small>(próximo)</small></a>
+
+ <!-- Gestión de Especies -->
+ <div class="nav-section-title mt-3">GESTIÓN DE ESPECIES</div>
+ <a class="nav-link" asp-page="/RegistrosCapturas/Index"><i class="bi bi-journal-plus"></i> Registro de Captura</a>
+ <a class="nav-link" asp-page="/VentasEspecies/Index"><i class="bi bi-shop"></i> Venta de Mariscos</a>
+
+ <!-- Reportes -->
+ <div class="nav-section-title mt-3">REPORTES</div>
+ <a class="nav-link text-muted"><i class="bi bi-bar-chart"></i> Reportes <small>(pendiente)</small></a>
+ }
+
+ <!-- Cuenta -->
+ <div class="nav-section-title mt-3">MI CUENTA</div>
+ <a class="nav-link" asp-page="/Account/Profile"><i class="bi bi-person-circle"></i> Mi perfil</a>
+ <a class="nav-link" asp-page="/Account/ChangePassword"><i class="bi bi-key"></i> Cambiar contraseña</a>
+
+ @if (User.IsInRole("Administrador"))
+ {
+ <div class="nav-section-title mt-3">DESARROLLO</div>
+ <a class="nav-link" asp-page="/Admin/Index"><i class="bi bi-gear"></i> Panel Admin</a>
+ <a class="nav-link" asp-page="/Tools/Seed"><i class="bi bi-database"></i> Seed</a>
+ }
  }
  else
  {
@@ -105,27 +127,49 @@
  <nav class="nav flex-column p-2">
  @if (User?.Identity?.IsAuthenticated ?? false)
  {
- <a class="nav-link" asp-page="/Usuarios/Index">Usuarios</a>
-				@if (User.IsInRole("Administrador") || User.IsInRole("Editor"))
-				{
-					<a class="nav-link" asp-page="/Pescadores/Index">Pescadores</a>
-					<a class="nav-link" asp-page="/Embarcaciones/Index">Embarcaciones</a>
-					<a class="nav-link" asp-page="/Especies/Index">Especies</a>
-					<a class="nav-link" asp-page="/ArtePesca/Index">Artes de Pesca</a>
-					<a class="nav-link" asp-page="/SitiosPesca/Index">Sitios de Pesca</a>
-					<a class="nav-link" asp-page="/Insumos/Index">Insumos</a>
-					<a class="nav-link" asp-page="/Proveedores/Index">Proveedores</a>
-					<a class="nav-link" asp-page="/ComprasInsumos/Index">Compras de Insumos</a>
-					<a class="nav-link" asp-page="/RegistrosCapturas/Index">Registros de Capturas</a>
-				}
+ <!-- Administración -->
  @if (User.IsInRole("Administrador"))
  {
- <a class="nav-link" asp-page="/Admin/Index">Panel Administración</a>
- <a class="nav-link" asp-page="/Roles/Index">Roles</a>
- <a class="nav-link" asp-page="/Tools/Seed">Seed (Dev)</a>
+ <div class="nav-section-title">ADMINISTRACIÓN</div>
+ <a class="nav-link" asp-page="/Usuarios/Index"><i class="bi bi-people"></i> Usuarios</a>
+ <a class="nav-link" asp-page="/Roles/Index"><i class="bi bi-shield-check"></i> Roles</a>
+ <a class="nav-link" asp-page="/Especies/Index"><i class="bi bi-table"></i> Especies</a>
+ <a class="nav-link" asp-page="/Pescadores/Index"><i class="bi bi-person"></i> Pescadores</a>
+ <a class="nav-link" asp-page="/Embarcaciones/Index"><i class="bi bi-water"></i> Embarcaciones</a>
+ <a class="nav-link" asp-page="/ArtePesca/Index"><i class="bi bi-grid-3x3"></i> Artes de Pesca</a>
+ <a class="nav-link" asp-page="/SitiosPesca/Index"><i class="bi bi-geo-alt"></i> Lugares de Pesca</a>
  }
- <a class="nav-link" asp-page="/Account/ChangePassword">Cambiar contraseña</a>
- <a class="nav-link" asp-page="/Account/Profile">Mi perfil</a>
+
+ <!-- Insumos -->
+ @if (User.IsInRole("Administrador") || User.IsInRole("Editor"))
+ {
+ <div class="nav-section-title mt-3">INSUMOS</div>
+ <a class="nav-link" asp-page="/Insumos/Index"><i class="bi bi-box-seam"></i> Insumos</a>
+ <a class="nav-link" asp-page="/Proveedores/Index"><i class="bi bi-truck"></i> Proveedores</a>
+ <a class="nav-link" asp-page="/ComprasInsumos/Index"><i class="bi bi-cart-plus"></i> Compra de Insumos</a>
+ <a class="nav-link text-muted"><i class="bi bi-cash-coin"></i> Venta de Insumos <small>(próximo)</small></a>
+
+ <!-- Gestión de Especies -->
+ <div class="nav-section-title mt-3">GESTIÓN DE ESPECIES</div>
+ <a class="nav-link" asp-page="/RegistrosCapturas/Index"><i class="bi bi-journal-plus"></i> Registro de Captura</a>
+ <a class="nav-link" asp-page="/VentasEspecies/Index"><i class="bi bi-shop"></i> Venta de Mariscos</a>
+
+ <!-- Reportes -->
+ <div class="nav-section-title mt-3">REPORTES</div>
+ <a class="nav-link text-muted"><i class="bi bi-bar-chart"></i> Reportes <small>(pendiente)</small></a>
+ }
+
+ <!-- Cuenta -->
+ <div class="nav-section-title mt-3">MI CUENTA</div>
+ <a class="nav-link" asp-page="/Account/Profile"><i class="bi bi-person-circle"></i> Mi perfil</a>
+ <a class="nav-link" asp-page="/Account/ChangePassword"><i class="bi bi-key"></i> Cambiar contraseña</a>
+
+ @if (User.IsInRole("Administrador"))
+ {
+ <div class="nav-section-title mt-3">DESARROLLO</div>
+ <a class="nav-link" asp-page="/Admin/Index"><i class="bi bi-gear"></i> Panel Admin</a>
+ <a class="nav-link" asp-page="/Tools/Seed"><i class="bi bi-database"></i> Seed</a>
+ }
  }
  else
  {
@@ -183,7 +227,7 @@
          crossorigin="anonymous"></script>
  <script src="~/js/form-persistence.js"></script>
  <script nonce="@Context.Items["csp-nonce"]">
-     // Auto-dismiss alertas de éxito e info después de 5 segundos
+     // Auto-dismiss alertas después de 8 segundos (warning/error) o 5 segundos (success/info)
      document.addEventListener('DOMContentLoaded', function() {
          const successAlerts = document.querySelectorAll('.alert-success, .alert-info');
          successAlerts.forEach(function(alert) {
@@ -191,6 +235,14 @@
                  const bsAlert = new bootstrap.Alert(alert);
                  bsAlert.close();
              }, 5000);
+         });
+         
+         const warningErrorAlerts = document.querySelectorAll('.alert-warning, .alert-danger');
+         warningErrorAlerts.forEach(function(alert) {
+             setTimeout(function() {
+                 const bsAlert = new bootstrap.Alert(alert);
+                 bsAlert.close();
+             }, 8000);
          });
      });
  </script>

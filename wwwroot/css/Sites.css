@@ -24,6 +24,38 @@ html,body{min-height:100vh;background-color:var(--bg);color:var(--text);}
 .sidebar .logo{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--success));}
 .sidebar .userbox{padding:1rem;border-bottom:1px solid #1f2937;}
 
+/* Sidebar section titles */
+.nav-section-title{
+ padding:0.5rem 0.75rem;
+ font-size:0.75rem;
+ font-weight:700;
+ letter-spacing:0.05em;
+ color:#9ca3af;
+ text-transform:uppercase;
+ border-bottom:1px solid #1f2937;
+}
+.nav-section-title:first-child{border-top:none;}
+.sidebar .nav-link{
+ padding:0.5rem 0.75rem;
+ border-radius:0.375rem;
+ transition:background-color 0.2s;
+ color:#e5e7eb;
+}
+.sidebar .nav-link:hover{
+ background-color:#1f2937;
+ color:#ffffff;
+}
+.sidebar .nav-link i{
+ margin-right:0.5rem;
+ width:1.25rem;
+ display:inline-block;
+ color:#60a5fa;
+}
+.sidebar .nav-link.text-muted{
+ opacity:0.6;
+ cursor:not-allowed;
+}
+
 /* Responsive */
 @media (max-width:992px){ .sidebar{display:none;} .app-shell{display:block;} .content .container{padding-left:1rem;padding-right:1rem;} }
 @media (min-width:993px){ .content .container{max-width:1140px;} }

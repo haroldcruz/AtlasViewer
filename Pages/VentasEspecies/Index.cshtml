@@ -1,0 +1,80 @@
+@page
+@model AtlasViewer.Pages.VentasEspecies.IndexModel
+@{
+    ViewData["Title"] = "Ventas de Mariscos";
+}
+
+<section class="page-section">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="bi bi-cash-coin"></i> Ventas de Mariscos</h2>
+        @if (User.IsInRole("Administrador") || User.IsInRole("Editor"))
+        {
+            <a asp-page="Create" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Nueva Venta
+            </a>
+        }
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Listado de Ventas</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Ventas.Count == 0)
+            {
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle"></i> No hay ventas registradas.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Consecutivo</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Total Items</th>
+                                <th class="text-end">Total</th>
+                                <th style="width: 150px;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var venta in Model.Ventas)
+                            {
+                                <tr>
+                                    <td><strong>@venta.consecutivo</strong></td>
+                                    <td>@venta.fecha.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@venta.cliente</td>
+                                    <td>
+                                        <span class="badge bg-info">@venta.detalle.Count item(s)</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong>₡@venta.total.ToString("N2")</strong>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-page="Details" asp-route-id="@venta.Id" class="btn btn-sm btn-info" title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            @if (User.IsInRole("Administrador"))
+                                            {
+                                                <a asp-page="Edit" asp-route-id="@venta.Id" class="btn btn-sm btn-warning" title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a asp-page="Delete" asp-route-id="@venta.Id" class="btn btn-sm btn-danger" title="Eliminar">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</section>

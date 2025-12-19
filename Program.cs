@@ -171,13 +171,19 @@ app.Use(async (context, next) =>
  context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
  
  // CSP - Content Security Policy con nonce
+ var connectSrc = "'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com";
+ if (context.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment())
+ {
+     connectSrc += " ws://localhost:*";
+ }
+ 
  context.Response.Headers.Append("Content-Security-Policy", 
  $"default-src 'none'; " +
  $"script-src 'self' 'nonce-{nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
  $"style-src 'self' 'unsafe-hashes' 'nonce-{nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
  $"img-src 'self' data:; " +
  $"font-src 'self' data: https://cdn.jsdelivr.net; " +
- $"connect-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+ $"connect-src {connectSrc}; " +
  $"frame-ancestors 'self'; " +
  $"base-uri 'self'; " +
  $"form-action 'self'; " +

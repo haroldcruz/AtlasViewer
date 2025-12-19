@@ -10,7 +10,7 @@
             <h3 class="mb-0"><i class="bi bi-clipboard-check"></i> Registro de Capturas de Pesca / Asomixta</h3>
         </div>
         <div class="card-body">
-            <form method="post" id="formRegistro">
+            <form method="post" id="formRegistro" class="no-persistence">
                 
                 <!-- Datos de Cabecera -->
                 <div class="row mb-4">
@@ -161,33 +161,112 @@
                     </button>
                 </div>
 
-                <!-- Placeholder Monitoreo Biológico -->
+                <!-- Monitoreo Biológico -->
                 <div id="monitoreoBiologico" class="card mb-3 d-none">
                     <div class="card-header bg-secondary text-white">
                         <h5 class="mb-0">Monitoreo Biológico</h5>
                     </div>
                     <div class="card-body">
-                        <p class="text-muted">Sección en desarrollo...</p>
+                        <p class="text-muted mb-3"><small>Registre datos biológicos de muestras individuales de especies capturadas</small></p>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Especie</th>
+                                        <th>Talla (cm)</th>
+                                        <th>Peso (kg)</th>
+                                        <th>Sexo</th>
+                                        <th>Madurez</th>
+                                        <th>Eviscerado</th>
+                                        <th>Observaciones</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="monitoreoBiologicoBody">
+                                    <!-- Líneas dinámicas -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="btnAgregarMonitoreo">
+                            <i class="bi bi-plus-circle"></i> Agregar muestra
+                        </button>
                     </div>
                 </div>
 
-                <!-- Placeholder Pesca Incidental -->
+                <!-- Pesca Incidental -->
                 <div id="pescaIncidental" class="card mb-3 d-none">
                     <div class="card-header bg-warning text-dark">
                         <h5 class="mb-0">Pesca Incidental / Acompañante</h5>
                     </div>
                     <div class="card-body">
-                        <p class="text-muted">Sección en desarrollo...</p>
+                        <p class="text-muted mb-3"><small>Registre especies capturadas incidentalmente (fauna acompañante)</small></p>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Especie / Nombre común</th>
+                                        <th># de individuos</th>
+                                        <th>Peso total (Kg)</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pescaIncidentalBody">
+                                    <!-- Líneas dinámicas -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-warning" id="btnAgregarIncidental">
+                            <i class="bi bi-plus-circle"></i> Agregar especie
+                        </button>
                     </div>
                 </div>
 
-                <!-- Placeholder Pesca Fantasma -->
+                <!-- Pesca Fantasma -->
                 <div id="pescaFantasma" class="card mb-3 d-none">
                     <div class="card-header bg-danger text-white">
-                        <h5 class="mb-0">Pesca Fantasma</h5>
+                        <h5 class="mb-0">Artes de Pesca Fantasma</h5>
                     </div>
                     <div class="card-body">
-                        <p class="text-muted">Sección en desarrollo...</p>
+                        <p class="text-muted mb-3"><small>Registre artes de pesca perdidos o abandonados encontrados</small></p>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Tipo de arte</th>
+                                        <th>Especies afectadas</th>
+                                        <th>Ubicación</th>
+                                        <th>Liberación</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pescaFantasmaBody">
+                                    <!-- Líneas dinámicas -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-danger" id="btnAgregarFantasma">
+                            <i class="bi bi-plus-circle"></i> Agregar registro
+                        </button>
+
+                        <!-- Datalists para autocompletar -->
+                        <datalist id="artesDatalist">
+                            @foreach (var arte in Model.ArtesPesca)
+                            {
+                                <option value="@arte.nombre" />
+                            }
+                        </datalist>
+                        <datalist id="especiesDatalist">
+                            @foreach (var especie in Model.Especies)
+                            {
+                                <option value="@especie.nombre" />
+                            }
+                        </datalist>
+                        <datalist id="sitiosDatalist">
+                            @foreach (var sitio in Model.SitiosPesca)
+                            {
+                                <option value="@sitio.nombre" />
+                            }
+                        </datalist>
                     </div>
                 </div>
 
@@ -211,6 +290,21 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script nonce="@HttpContext.Items["csp-nonce"]">
+        // Prevenir submit con Enter en campos del formulario
+        document.getElementById('formRegistro').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && e.target.type !== 'submit') {
+                e.preventDefault();
+                // Mover foco al siguiente campo
+                const form = e.target.form;
+                const focusable = Array.from(form.querySelectorAll('input:not([type=hidden]), select, textarea, button'))
+                    .filter(el => !el.disabled && el.offsetParent !== null);
+                const index = focusable.indexOf(e.target);
+                if (index > -1 && index < focusable.length - 1) {
+                    focusable[index + 1].focus();
+                }
+            }
+        });
+
         const pescadores = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Pescadores));
         const especies = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Especies));
         const insumos = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Insumos));
@@ -218,6 +312,16 @@
         
         let contadorCaptura = 0;
         let contadorInsumo = 0;
+
+        // Restaurar tablas dinámicas si hay datos del modelo o de TempData (error de validación)
+        const capturasExistentes = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RegistroCaptura?.capturas ?? new List<AtlasViewer.Models.CapturaDetalle>()));
+        const insumosExistentes = capturasExistentes.length > 0 && capturasExistentes[0].insumos 
+            ? capturasExistentes[0].insumos 
+            : [];
+        
+        // Datos preservados desde TempData cuando hay errores de validación
+        const capturasDatosTempData = @Html.Raw(string.IsNullOrEmpty(Model.CapturasDatos) ? "null" : Model.CapturasDatos);
+        const insumosDatosTempData = @Html.Raw(string.IsNullOrEmpty(Model.InsumosDatos) ? "null" : Model.InsumosDatos);
 
         // Búsqueda de pescador
         const pescadorSearch = document.getElementById('pescadorSearch');
@@ -318,29 +422,94 @@
             const precioInput = row.querySelector('.precio-kg');
             const totalInput = row.querySelector('.total-linea');
 
+            // Selección automática en campos numéricos
+            [numeroPecesInput, pesoInput, precioInput].forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.select();
+                });
+            });
+
             codigoInput.addEventListener('blur', function() {
                 const codigo = this.value.trim();
                 if (!codigo) return;
 
                 const especie = especies.find(e => e.codigo.toLowerCase() === codigo.toLowerCase());
                 if (especie) {
+                    // Verificar si ya existe esta especie en otra línea
+                    const especiesExistentes = Array.from(document.querySelectorAll('#capturaBody .especieId'))
+                        .filter(input => input !== especieIdInput)
+                        .map(input => input.value);
+                    
+                    if (especiesExistentes.includes(especie.Id)) {
+                        alert('Esta especie ya fue agregada en otra línea. No se permiten duplicados.');
+                        this.value = '';
+                        especieIdInput.value = '';
+                        nombreSpan.textContent = '';
+                        return;
+                    }
+                    
                     especieIdInput.value = especie.Id;
                     nombreSpan.textContent = especie.nombre;
                     precioInput.value = especie.precioPromedioCompra || 0;
                     numeroPecesInput.focus();
+                    
+                    // Actualizar dropdowns de monitoreo
+                    actualizarEstadoBotonMonitoreo();
+                    actualizarDropdownsMonitoreo();
                 } else {
                     alert('Especie no encontrada');
                     this.value = '';
                 }
             });
 
+            // Cálculo automático al cambiar valores
             [pesoInput, precioInput].forEach(input => {
-                input.addEventListener('input', () => {
+                input.addEventListener('blur', () => {
                     const peso = parseFloat(pesoInput.value) || 0;
                     const precio = parseFloat(precioInput.value) || 0;
                     totalInput.value = (peso * precio).toFixed(2);
                     calcularTotalCaptura();
                 });
+            });
+
+            // Enter en el último campo (total) agrega nueva línea
+            totalInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    // Calcular si no está calculado
+                    const peso = parseFloat(pesoInput.value) || 0;
+                    const precio = parseFloat(precioInput.value) || 0;
+                    totalInput.value = (peso * precio).toFixed(2);
+                    calcularTotalCaptura();
+                    
+                    // Agregar nueva línea y enfocar
+                    agregarLineaCaptura();
+                    setTimeout(() => {
+                        const newRow = document.querySelector(`#capturaBody tr[data-index="${contadorCaptura}"]`);
+                        if (newRow) {
+                            newRow.querySelector('.codigo-especie').focus();
+                        }
+                    }, 100);
+                }
+            });
+
+            // También permitir Enter desde precio para agregar línea
+            precioInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const peso = parseFloat(pesoInput.value) || 0;
+                    const precio = parseFloat(precioInput.value) || 0;
+                    totalInput.value = (peso * precio).toFixed(2);
+                    calcularTotalCaptura();
+                    
+                    agregarLineaCaptura();
+                    setTimeout(() => {
+                        const newRow = document.querySelector(`#capturaBody tr[data-index="${contadorCaptura}"]`);
+                        if (newRow) {
+                            newRow.querySelector('.codigo-especie').focus();
+                        }
+                    }, 100);
+                }
             });
         }
 
@@ -391,12 +560,32 @@
             const precioInput = row.querySelector('.precio-insumo');
             const totalInput = row.querySelector('.total-insumo');
 
+            // Selección automática en campos numéricos
+            [cantidadInput, precioInput].forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.select();
+                });
+            });
+
             codigoInput.addEventListener('blur', function() {
                 const codigo = this.value.trim();
                 if (!codigo) return;
 
                 const insumo = insumos.find(i => i.codigo.toLowerCase() === codigo.toLowerCase());
                 if (insumo) {
+                    // Verificar si ya existe este insumo en otra línea
+                    const insumosExistentes = Array.from(document.querySelectorAll('#insumosBody .insumoId'))
+                        .filter(input => input !== insumoIdInput)
+                        .map(input => input.value);
+                    
+                    if (insumosExistentes.includes(insumo.Id)) {
+                        alert('Este insumo ya fue agregado en otra línea. No se permiten duplicados.');
+                        this.value = '';
+                        insumoIdInput.value = '';
+                        nombreSpan.textContent = '';
+                        return;
+                    }
+                    
                     insumoIdInput.value = insumo.Id;
                     nombreSpan.textContent = insumo.nombre + ' (' + insumo.unidad + ')';
                     precioInput.value = insumo.precioPromedioVenta || 0;
@@ -407,13 +596,48 @@
                 }
             });
 
+            // Cálculo automático al cambiar valores
             [cantidadInput, precioInput].forEach(input => {
-                input.addEventListener('input', () => {
+                input.addEventListener('blur', () => {
                     const cantidad = parseFloat(cantidadInput.value) || 0;
                     const precio = parseFloat(precioInput.value) || 0;
                     totalInput.value = (cantidad * precio).toFixed(2);
                     calcularTotalInsumos();
                 });
+            });
+
+            // Enter en el último campo (precio o total) agrega nueva línea
+            precioInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    // Calcular si no está calculado
+                    const cantidad = parseFloat(cantidadInput.value) || 0;
+                    const precio = parseFloat(precioInput.value) || 0;
+                    totalInput.value = (cantidad * precio).toFixed(2);
+                    calcularTotalInsumos();
+                    
+                    // Agregar nueva línea y enfocar
+                    agregarLineaInsumo();
+                    setTimeout(() => {
+                        const newRow = document.querySelector(`#insumosBody tr[data-index="${contadorInsumo}"]`);
+                        if (newRow) {
+                            newRow.querySelector('.codigo-insumo').focus();
+                        }
+                    }, 100);
+                }
+            });
+
+            totalInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    agregarLineaInsumo();
+                    setTimeout(() => {
+                        const newRow = document.querySelector(`#insumosBody tr[data-index="${contadorInsumo}"]`);
+                        if (newRow) {
+                            newRow.querySelector('.codigo-insumo').focus();
+                        }
+                    }, 100);
+                }
             });
         }
 
@@ -430,6 +654,127 @@
             document.getElementById('totalInsumos').textContent = total.toFixed(2);
         }
 
+        // Monitoreo Biológico
+        let contadorMonitoreo = 0;
+
+        function actualizarEstadoBotonMonitoreo() {
+            const btnMonitoreo = document.getElementById('btnAgregarMonitoreo');
+            const hayCapturas = document.querySelectorAll('#capturaBody .especieId[value]').length > 0;
+            btnMonitoreo.disabled = !hayCapturas;
+            if (!hayCapturas) {
+                btnMonitoreo.title = 'Primero agregue capturas para habilitar monitoreo';
+            } else {
+                btnMonitoreo.title = '';
+            }
+        }
+
+        function obtenerEspeciesCapturadas() {
+            return Array.from(document.querySelectorAll('#capturaBody .especieId'))
+                .map(input => ({
+                    id: input.value,
+                    nombre: especies.find(e => e.Id === input.value)?.nombre || 'Desconocida'
+                }))
+                .filter(e => e.id);
+        }
+
+        function actualizarDropdownsMonitoreo() {
+            const especiesCapturadas = obtenerEspeciesCapturadas();
+            const selects = document.querySelectorAll('#monitoreoBiologicoBody .especie-monitoreo');
+            
+            selects.forEach(select => {
+                const valorActual = select.value;
+                select.innerHTML = '<option value="">Seleccione...</option>' +
+                    especiesCapturadas.map(e => `<option value="${e.id}" ${e.id === valorActual ? 'selected' : ''}>${e.nombre}</option>`).join('');
+            });
+        }
+
+        function agregarLineaMonitoreo() {
+            contadorMonitoreo++;
+            const especiesCapturadas = obtenerEspeciesCapturadas();
+
+            const row = `
+                <tr data-index="${contadorMonitoreo}">
+                    <td>
+                        <select class="form-select form-select-sm especie-monitoreo" name="Monitoreo[${contadorMonitoreo}].especieId" required>
+                            <option value="">Seleccione...</option>
+                            ${especiesCapturadas.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-control form-control-sm" name="Monitoreo[${contadorMonitoreo}].tallaCm" min="0" step="0.1" placeholder="cm" required /></td>
+                    <td><input type="number" class="form-control form-control-sm" name="Monitoreo[${contadorMonitoreo}].pesoKg" min="0" step="0.01" placeholder="kg" /></td>
+                    <td>
+                        <select class="form-select form-select-sm" name="Monitoreo[${contadorMonitoreo}].sexo">
+                            <option value="">-</option>
+                            <option value="H">Hembra</option>
+                            <option value="M">Macho</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select form-select-sm" name="Monitoreo[${contadorMonitoreo}].madurez">
+                            <option value="">-</option>
+                            <option value="I">Inmaduro</option>
+                            <option value="M">Maduro</option>
+                            <option value="D">Desovada</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="Monitoreo[${contadorMonitoreo}].eviscerado" value="true" />
+                        </div>
+                    </td>
+                    <td><input type="text" class="form-control form-control-sm" name="Monitoreo[${contadorMonitoreo}].observaciones" maxlength="500" /></td>
+                    <td><button type="button" class="btn btn-sm btn-danger btn-eliminar-monitoreo" data-index="${contadorMonitoreo}">
+                        <i class="bi bi-trash"></i></button></td>
+                </tr>
+            `;
+            document.getElementById('monitoreoBiologicoBody').insertAdjacentHTML('beforeend', row);
+        }
+
+        // Contador para Pesca Incidental
+        let contadorIncidental = 0;
+
+        function agregarLineaIncidental() {
+            contadorIncidental++;
+            const row = `
+                <tr data-index="${contadorIncidental}">
+                    <td>
+                        <select class="form-select form-select-sm" name="Incidental[${contadorIncidental}].especieId" required>
+                            <option value="">Seleccione especie...</option>
+                            ${especies.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-control form-control-sm" name="Incidental[${contadorIncidental}].individuos" min="0" step="1" placeholder="0" required /></td>
+                    <td><input type="number" class="form-control form-control-sm" name="Incidental[${contadorIncidental}].pesoTotalKg" min="0" step="0.01" placeholder="0.00" required /></td>
+                    <td><button type="button" class="btn btn-sm btn-danger btn-eliminar-incidental" data-index="${contadorIncidental}">
+                        <i class="bi bi-trash"></i></button></td>
+                </tr>
+            `;
+            document.getElementById('pescaIncidentalBody').insertAdjacentHTML('beforeend', row);
+        }
+
+        // Contador para Pesca Fantasma
+        let contadorFantasma = 0;
+
+        function agregarLineaFantasma() {
+            contadorFantasma++;
+            const row = `
+                <tr data-index="${contadorFantasma}">
+                    <td><input type="text" class="form-control form-control-sm" name="Fantasma[${contadorFantasma}].tipoArte" list="artesDatalist" maxlength="200" placeholder="Ej: Red agallera, palangre..." required /></td>
+                    <td><input type="text" class="form-control form-control-sm" name="Fantasma[${contadorFantasma}].especiesAfectadas" list="especiesDatalist" maxlength="500" placeholder="Separadas por comas" /></td>
+                    <td><input type="text" class="form-control form-control-sm" name="Fantasma[${contadorFantasma}].ubicacion" list="sitiosDatalist" maxlength="500" placeholder="Ubicación específica" /></td>
+                    <td>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="Fantasma[${contadorFantasma}].liberacion" value="true" />
+                            <label class="form-check-label">Sí</label>
+                        </div>
+                    </td>
+                    <td><button type="button" class="btn btn-sm btn-danger btn-eliminar-fantasma" data-index="${contadorFantasma}">
+                        <i class="bi bi-trash"></i></button></td>
+                </tr>
+            `;
+            document.getElementById('pescaFantasmaBody').insertAdjacentHTML('beforeend', row);
+        }
+
         // Toggle secciones opcionales
         function toggleSeccion(seccionId) {
             const seccion = document.getElementById(seccionId);
@@ -443,6 +788,10 @@
                 const index = btn.getAttribute('data-index');
                 document.querySelector(`#capturaBody tr[data-index="${index}"]`).remove();
                 calcularTotalCaptura();
+                
+                // Actualizar monitoreo
+                actualizarEstadoBotonMonitoreo();
+                actualizarDropdownsMonitoreo();
             }
         });
 
@@ -455,9 +804,18 @@
             }
         });
 
+        document.getElementById('monitoreoBiologicoBody').addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-eliminar-monitoreo');
+            if (btn) {
+                const index = btn.getAttribute('data-index');
+                document.querySelector(`#monitoreoBiologicoBody tr[data-index="${index}"]`).remove();
+            }
+        });
+
         // Event listeners para botones de agregar
         document.getElementById('btnAgregarCaptura').addEventListener('click', agregarLineaCaptura);
         document.getElementById('btnAgregarInsumo').addEventListener('click', agregarLineaInsumo);
+        document.getElementById('btnAgregarMonitoreo').addEventListener('click', agregarLineaMonitoreo);
 
         // Event listeners para toggle de secciones
         document.querySelectorAll('[data-toggle-seccion]').forEach(btn => {
@@ -467,10 +825,116 @@
             });
         });
 
-        // Inicializar con una línea de cada tipo
+        // Inicializar estado de botón de monitoreo
+        actualizarEstadoBotonMonitoreo();
+
+        // Restaurar tablas si hay datos del servidor (error de validación)
+        if (capturasDatosTempData && capturasDatosTempData.length > 0) {
+            // Restaurar desde TempData (cuando hay error de validación sin capturas procesadas)
+            const capturasPorIndice = {};
+            capturasDatosTempData.forEach(item => {
+                const match = item.key.match(/Capturas\[(\d+)\]\.(\w+)/);
+                if (match) {
+                    const index = match[1];
+                    const field = match[2];
+                    if (!capturasPorIndice[index]) capturasPorIndice[index] = {};
+                    capturasPorIndice[index][field] = item.value;
+                }
+            });
+            
+            Object.keys(capturasPorIndice).forEach(index => {
+                const captura = capturasPorIndice[index];
+                agregarLineaCaptura();
+                const row = document.querySelector(`#capturaBody tr[data-index="${contadorCaptura - 1}"]`);
+                if (row && captura.especieId) {
+                    const especie = especies.find(e => e.id === captura.especieId);
+                    if (especie) {
+                        row.querySelector('.codigo-especie').value = especie.codigo;
+                        row.querySelector('.especieId').value = captura.especieId;
+                        row.querySelector('.nombre-especie').textContent = especie.nombre;
+                    }
+                    if (captura.numeroPeces) row.querySelector('.numero-peces').value = captura.numeroPeces;
+                    if (captura.pesoTotalKg) row.querySelector('.peso-kg').value = captura.pesoTotalKg;
+                    if (captura.precioKilo) row.querySelector('.precio-kg').value = captura.precioKilo;
+                    if (captura.total) row.querySelector('.total-linea').value = captura.total;
+                }
+            });
+            calcularTotalCaptura();
+        } else if (capturasExistentes.length > 0) {
+            // Restaurar desde modelo (cuando hay capturas procesadas)
+            capturasExistentes.forEach(captura => {
+                agregarLineaCaptura();
+                const row = document.querySelector(`#capturaBody tr[data-index="${contadorCaptura - 1}"]`);
+                const especie = especies.find(e => e.id === captura.especieId);
+                if (especie && row) {
+                    row.querySelector('.codigo-especie').value = especie.codigo;
+                    row.querySelector('.especieId').value = captura.especieId;
+                    row.querySelector('.nombre-especie').textContent = especie.nombre;
+                    row.querySelector('.numero-peces').value = captura.numeroPeces;
+                    row.querySelector('.peso-kg').value = captura.pesoTotalKg;
+                    row.querySelector('.precio-kg').value = captura.precioKilo;
+                    row.querySelector('.total-linea').value = captura.total;
+                }
+            });
+            calcularTotalCaptura();
+        }
+
+        if (insumosDatosTempData && insumosDatosTempData.length > 0) {
+            // Restaurar insumos desde TempData
+            const insumosPorIndice = {};
+            insumosDatosTempData.forEach(item => {
+                const match = item.key.match(/Insumos\[(\d+)\]\.(\w+)/);
+                if (match) {
+                    const index = match[1];
+                    const field = match[2];
+                    if (!insumosPorIndice[index]) insumosPorIndice[index] = {};
+                    insumosPorIndice[index][field] = item.value;
+                }
+            });
+            
+            Object.keys(insumosPorIndice).forEach(index => {
+                const insumo = insumosPorIndice[index];
+                agregarLineaInsumo();
+                const row = document.querySelector(`#insumosBody tr[data-index="${contadorInsumo - 1}"]`);
+                if (row && insumo.insumoId) {
+                    const insumoData = insumos.find(i => i.id === insumo.insumoId);
+                    if (insumoData) {
+                        row.querySelector('.codigo-insumo').value = insumoData.codigo;
+                        row.querySelector('.insumoId').value = insumo.insumoId;
+                        row.querySelector('.nombre-insumo').textContent = insumoData.nombre + ' (' + insumoData.unidad + ')';
+                    }
+                    if (insumo.cantidad) row.querySelector('.cantidad-insumo').value = insumo.cantidad;
+                    if (insumo.precioUnitario) row.querySelector('.precio-insumo').value = insumo.precioUnitario;
+                    if (insumo.subtotal) row.querySelector('.total-insumo').value = insumo.subtotal;
+                }
+            });
+            calcularTotalInsumos();
+        } else if (insumosExistentes.length > 0) {
+            // Restaurar insumos desde modelo
+            insumosExistentes.forEach(insumo => {
+                agregarLineaInsumo();
+                const row = document.querySelector(`#insumosBody tr[data-index="${contadorInsumo - 1}"]`);
+                const insumoData = insumos.find(i => i.id === insumo.insumoId);
+                if (insumoData && row) {
+                    row.querySelector('.codigo-insumo').value = insumoData.codigo;
+                    row.querySelector('.insumoId').value = insumo.insumoId;
+                    row.querySelector('.nombre-insumo').textContent = insumoData.nombre + ' (' + insumoData.unidad + ')';
+                    row.querySelector('.cantidad-insumo').value = insumo.cantidad;
+                    row.querySelector('.precio-insumo').value = insumo.precioUnitario;
+                    row.querySelector('.total-insumo').value = insumo.subtotal;
+                }
+            });
+            calcularTotalInsumos();
+        }
+
+        // Inicializar con una línea de cada tipo si no hay datos restaurados
         window.addEventListener('DOMContentLoaded', function() {
-            agregarLineaCaptura();
-            agregarLineaInsumo();
+            if (!capturasDatosTempData && capturasExistentes.length === 0) {
+                agregarLineaCaptura();
+            }
+            if (!insumosDatosTempData && insumosExistentes.length === 0) {
+                agregarLineaInsumo();
+            }
         });
     </script>
 }
